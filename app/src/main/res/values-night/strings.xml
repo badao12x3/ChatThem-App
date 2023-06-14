@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="chat">Đoạn chat</string>
+    <string name="contact">Liên hệ</string>
+    <string name="profile">Cá nhân</string>
+</resources>
