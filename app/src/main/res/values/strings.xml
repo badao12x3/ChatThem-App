@@ -6,9 +6,9 @@
     <string name="name">Họ tên</string>
     <string name="sign_up">Đăng ký</string>
     <string name="sign_in">Sign In</string>
-    <string name="select_user">Select User</string>
-    <string name="create_group">Create Group</string>
-    <string name="type_a_message">Type a message</string>
+    <string name="select_user">Tin nhắn mới</string>
+    <string name="create_group">Tạo nhóm mới</string>
+    <string name="type_a_message">Tin nhắn</string>
     <string name="online">Online</string>
     <string name="change_password">Change password</string>
     <string name="new_password">New Password</string>

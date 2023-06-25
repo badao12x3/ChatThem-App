@@ -11,6 +11,18 @@
     <color name="rippleLight">#33FFFFFF</color>
     <color name="secondary_text">#808080</color>
 
+    <color name="bg_main">#F4E9DF</color>
+    <color name="name_pri">#0B2F5B</color>
+    <color name="name_sec">#8B9DB2</color>
+    <color name="red">#F44336</color>
+    <color name="orange">#FFA500</color>
+    <color name="green">#4CAF50</color>
+    <color name="secondary_text1">#676767</color>
+    <color name="icon_background">#20FFFFFF</color>
+    <color name="input_background">#ECECEC</color>
+
+
+
     <color name="ucrop_color_toolbar">@color/md_theme_light_primaryContainer</color>
     <color name="ucrop_color_statusbar">@color/md_theme_light_primary</color>
     <color name="ucrop_color_widget_active">@color/md_theme_dark_tertiary</color>

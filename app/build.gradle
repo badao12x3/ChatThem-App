@@ -76,4 +76,9 @@ dependencies {
     implementation 'org.bouncycastle:bcprov-jdk15on:1.69'
     implementation 'org.bouncycastle:bcpkix-jdk15on:1.69'
 
+    //Shimmer Effect
+    implementation 'com.facebook.shimmer:shimmer:0.1.0@aar'
+
+    
+
 }

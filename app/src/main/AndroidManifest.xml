@@ -2,9 +2,10 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.INTERNET" />
 
     <application
+        android:name=".MyApp"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -12,10 +13,25 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:usesCleartextTraffic="true"
         android:theme="@style/Theme.ChatThem"
-        android:name=".MyApp"
+        android:usesCleartextTraffic="true"
         tools:targetApi="31">
+        <activity
+            android:name=".chats.group_chat_info.view.GroupChatInfoActivity"
+            android:exported="false" />
+        <activity
+            android:name=".chats.private_chat_info.view.PrivateChatInfoActivity"
+            android:exported="false" />
+        <activity
+            android:name=".chats.create_new_group_chat.view.CreateGroupChatActivity"
+            android:exported="false" />
+        <activity
+            android:name=".chats.create_new_private_chat.view.CreatePrivateChatActivity"
+            android:exported="false" />
+        <activity
+            android:name=".chats.chat.view.ChatActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".authentication.LoginActivity"
             android:exported="true"
@@ -34,9 +50,11 @@
             android:exported="true" />
         <activity
             android:name=".MainActivity"
-            android:exported="true">
+            android:exported="true" />
 
-        </activity>
+        <meta-data
+            android:name="preloaded_fonts"
+            android:resource="@array/preloaded_fonts" />
     </application>
 
 </manifest>

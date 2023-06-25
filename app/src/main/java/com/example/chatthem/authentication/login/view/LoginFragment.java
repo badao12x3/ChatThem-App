@@ -202,4 +202,13 @@ public class LoginFragment extends Fragment implements LogInContract.ViewInterfa
         startActivity(intent);
         requireActivity().finish();
     }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        if (logInPresenter.getDisposable() != null) {
+            logInPresenter.getDisposable().dispose();
+        }
+
+    }
 }

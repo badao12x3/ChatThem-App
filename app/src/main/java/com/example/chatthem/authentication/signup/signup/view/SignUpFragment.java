@@ -322,6 +322,9 @@ public class SignUpFragment extends Fragment implements SignUpContract.ViewInter
         Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
     }
     private void loading(Boolean isload){
+        if (isload){
+            binding.status.setVisibility(View.INVISIBLE);
+        }
         binding.loading.setVisibility(isload? View.VISIBLE : View.GONE);
         binding.signup.setVisibility(isload? View.GONE : View.VISIBLE);
     }
@@ -363,5 +366,14 @@ public class SignUpFragment extends Fragment implements SignUpContract.ViewInter
         loading(false);
         binding.status.setText("Tạo cặp khóa thất bại");
         binding.status.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        if (signUpPresenter.getDisposable() != null) {
+            signUpPresenter.getDisposable().dispose();
+        }
+
     }
 }
