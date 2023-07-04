@@ -15,16 +15,16 @@ public class Constants {
     public static final String KEY_NAME = "name";
     public static final String KEY_EMAIL = "email";
     public static final String KEY_ADDRESS_CITY = "city";
-    public static final String KEY_ADDRESS_PROVINCE = "province";
-    public static final String KEY_ADDRESS_TOWN = "town";
-    public static final String KEY_ADDRESS_STREET = "street";
-    public static final String KEY_ADDRESS_NUMBER = "numberHome";
+    public static final String KEY_ADDRESS_COUNTRY = "country";
+    public static final String KEY_ADDRESS_DETAIL = "address";
     public static final String KEY_PHONE = "phonenumber";
     public static final String KEY_PASSWORD = "password";
     public static final String KEY_IS_SIGNED_IN = "isSignedIn";
     public static final String KEY_USED_ID = "userId";
     public static final String KEY_AVATAR = "avatar";
     public static final String KEY_COVERIMAGE = "coverImage";
+    public static final String KEY_GENDER = "gender";
+    public static final String KEY_BIRTHDAY = "birthday";
     public static final String KEY_FCM_TOKEN = "fcmToken";
     public static final String KEY_TOKEN = "token";
     public static final String KEY_USER = "user";
@@ -62,7 +62,12 @@ public class Constants {
     public static final String KEY_SENDER_PUBLIC_KEY = "senderPublicKey";
 
     public static final String KEY_PRIVATE_KEY = "privateKey";
+    public static final String KEY_PRIVATE_CHAT = "PRIVATE_CHAT";
+    public static final String KEY_GROUP_CHAT = "GROUP_CHAT";
+    public static final String KEY_TYPE_TEXT = "TEXT";
+    public static final String KEY_TYPE_IMAGE = "IMAGE";
     public static final String BASE_URL = "http://192.168.1.41:8000/api/v1/";
+    public static final String BASE_URL1 = "http://127.0.0.1:8000/api/v1/";
 
     public static HashMap<String, String> getRemoteMsgHeaders(){
         if(remotoMsgHeaders == null){

@@ -1,14 +1,16 @@
 package com.example.chatthem.authentication.model;
 
+import com.example.chatthem.chats.model.UserModel;
+
 public class LoginResponse {
-    private User data;
+    private UserModel data;
     private String token;
     private String message;
     private String code;
     private String details;
 
 
-    public LoginResponse(User data, String token, String message, String code, String details) {
+    public LoginResponse(UserModel data, String token, String message, String code, String details) {
         this.data = data;
         this.token = token;
         this.message = message;
@@ -16,11 +18,11 @@ public class LoginResponse {
         this.details = details;
     }
 
-    public User getData() {
+    public UserModel getData() {
         return data;
     }
 
-    public void setData(User data) {
+    public void setData(UserModel data) {
         this.data = data;
     }
 

@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ECC.TransferDataActivity">
+
+    <LinearLayout
+        android:id="@+id/view_noPrivateKey"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:background="@color/white"
+        android:gravity="center_vertical"
+        android:orientation="vertical"
+        android:visibility="visible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+            android:id="@+id/textContent"
+            android:layout_width="@dimen/_240sdp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_margin="10dp"
+            android:gravity="center"
+            android:fontFamily="@font/montserrat_semibold"
+            android:text="Bạn đang đăng nhập trên thiết bị mới"
+            android:textColor="@color/md_theme_light_onSurfaceVariant"
+            android:textSize="@dimen/_22ssp" />
+
+        <TextView
+            android:id="@+id/textFormat"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_margin="@dimen/_10sdp"
+            android:gravity="center"
+            android:text="Trên thiết bị cũ, hãy chọn tính năng chuyển dữ liệu trong tab Cá nhân để lấy mã QR và thực hiện quét trên thiết bị mới"
+            android:textSize="@dimen/_12ssp" />
+
+        <Button
+            android:id="@+id/scanBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginStart="@dimen/_20sdp"
+            android:layout_marginTop="@dimen/_10sdp"
+            android:layout_marginEnd="@dimen/_20sdp"
+            android:layout_marginBottom="@dimen/_10sdp"
+            android:backgroundTint="#0F9D58"
+            android:paddingLeft="@dimen/_10sdp"
+            android:paddingTop="@dimen/_5sdp"
+            android:paddingRight="@dimen/_10sdp"
+            android:paddingBottom="@dimen/_5sdp"
+            android:text="Quét"
+            android:textSize="@dimen/_12ssp" />
+
+    </LinearLayout>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -4,7 +4,14 @@ public class ProfileContract {
     interface PresenterInterface {
         // Interface này dành cho SignUpPresenter
     }
-    interface ViewInterface {
+    public interface ViewInterface {
         // Interface này dành cho SignUpActivity
+
+        void onEditProfileSuccess(String type);
+        void onEditProfileError();
+
+        void onGetProfileSuccess();
+
+        void onGetProfileError();
     }
 }

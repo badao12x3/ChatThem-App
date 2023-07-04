@@ -17,6 +17,12 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
         <activity
+            android:name=".ECC.TransferDataActivity"
+            android:exported="false" />
+        <activity
+            android:name=".profile.view.ChangePasswordActivity"
+            android:exported="false" />
+        <activity
             android:name=".chats.group_chat_info.view.GroupChatInfoActivity"
             android:exported="false" />
         <activity
@@ -31,6 +37,7 @@
         <activity
             android:name=".chats.chat.view.ChatActivity"
             android:exported="false"
+            android:parentActivityName=".MainActivity"
             android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".authentication.LoginActivity"
@@ -50,6 +57,10 @@
             android:exported="true" />
         <activity
             android:name=".MainActivity"
+            android:exported="true"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:name=".profile.view.QR_code"
             android:exported="true" />
 
         <meta-data

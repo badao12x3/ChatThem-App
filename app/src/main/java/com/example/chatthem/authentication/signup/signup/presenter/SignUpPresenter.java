@@ -6,6 +6,7 @@ import android.util.Log;
 import com.example.chatthem.ECC.ECCc;
 import com.example.chatthem.authentication.login.presenter.LogInContract;
 import com.example.chatthem.authentication.model.LoginResponse;
+import com.example.chatthem.authentication.model.SignupResponse;
 import com.example.chatthem.authentication.model.User;
 import com.example.chatthem.networking.APIServices;
 import com.example.chatthem.utilities.Constants;
@@ -36,7 +37,7 @@ public class SignUpPresenter {
 
     private Context mContext;
     private SignUpContract.ViewInterface viewInterface;
-    private LoginResponse mLoginResponse;
+    private SignupResponse mSignupResponse;
     private Disposable mDisposable;
     private PreferenceManager preferenceManager;
     private String priKeyStr = "";
@@ -70,15 +71,15 @@ public class SignUpPresenter {
         APIServices.apiServices.signup(avatar, username,phonenumber, password, publicKey)
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(new Observer<LoginResponse>() {
+                    .subscribe(new Observer<SignupResponse>() {
                         @Override
                         public void onSubscribe(@NonNull Disposable d) {
                             mDisposable = d;
                         }
 
                         @Override
-                        public void onNext(@NonNull LoginResponse loginResponse) {
-                            mLoginResponse = loginResponse;
+                        public void onNext(@NonNull SignupResponse signupResponse) {
+                            mSignupResponse = signupResponse;
                         }
 
                         @Override
@@ -99,8 +100,8 @@ public class SignUpPresenter {
                                     if (httpException.response() != null && httpException.response().errorBody() != null) {
                                         String error = httpException.response().errorBody().string();
 
-                                        mLoginResponse = new Gson().fromJson(error, LoginResponse.class);
-                                        if (Objects.equals(mLoginResponse.getCode(), "9997")) viewInterface.onPhoneExistSignUpFail();
+                                        mSignupResponse = new Gson().fromJson(error, SignupResponse.class);
+                                        if (Objects.equals(mSignupResponse.getCode(), "9997")) viewInterface.onPhoneExistSignUpFail();
 
                                         Log.e("HP",error);
                                     }
@@ -143,7 +144,7 @@ public class SignUpPresenter {
                                 return;
                             }
 
-                            User user = mLoginResponse.getData();
+                            User user = mSignupResponse.getData();
                             preferenceManager.putBoolean(Constants.KEY_IS_SIGNED_IN, true);
                             preferenceManager.putString(Constants.KEY_USED_ID, user.getId());
                             preferenceManager.putString(Constants.KEY_NAME, user.getUsername());
@@ -156,7 +157,7 @@ public class SignUpPresenter {
                             if (user.getPublicKey() != null){
                                 preferenceManager.putString(Constants.KEY_PUBLIC_KEY, user.getPublicKey());
                             }
-                            preferenceManager.putString(Constants.KEY_TOKEN, mLoginResponse.getToken());
+                            preferenceManager.putString(Constants.KEY_TOKEN, mSignupResponse.getToken());
 
 
                             viewInterface.onSignUpSuccess();
@@ -174,8 +175,8 @@ public class SignUpPresenter {
 //        );
 //    }
 
-    public LoginResponse getLoginResponse() {
-        return mLoginResponse;
+    public SignupResponse getmSignupResponse() {
+        return mSignupResponse;
     }
 
     public Disposable getDisposable() {

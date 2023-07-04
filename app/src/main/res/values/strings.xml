@@ -10,10 +10,10 @@
     <string name="create_group">Tạo nhóm mới</string>
     <string name="type_a_message">Tin nhắn</string>
     <string name="online">Online</string>
-    <string name="change_password">Change password</string>
-    <string name="new_password">New Password</string>
-    <string name="current_password">Current Password</string>
-    <string name="confirm_new_password">Confirm New Password</string>
+    <string name="change_password">Đổi mật khẩu</string>
+    <string name="new_password">Mật khẩu mới</string>
+    <string name="current_password">Mật khẩu hiện tại</string>
+    <string name="confirm_new_password">Xác nhận mật khẩu</string>
     <string name="chat">Đoạn chat</string>
     <string name="contact">Liên hệ</string>
     <string name="settings">Cài đặt</string>

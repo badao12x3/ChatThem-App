@@ -21,7 +21,7 @@ import java.util.Objects;
 
 public class RecentConversationsAdapter extends RecyclerView.Adapter<RecentConversationsAdapter.ConversiongViewHolder>{
 
-    private final List<Chat> chatMessages;
+    private List<Chat> chatMessages;
     private final ChatsContract.ViewInterface conversionListener;
 
     public RecentConversationsAdapter(List<Chat> chatMessages, ChatsContract.ViewInterface conversionListener) {
@@ -49,6 +49,11 @@ public class RecentConversationsAdapter extends RecyclerView.Adapter<RecentConve
     @Override
     public int getItemCount() {
         return chatMessages.size();
+    }
+
+    public void reset(List<Chat> conversations) {
+        chatMessages = conversations;
+        notifyDataSetChanged();
     }
 
     class ConversiongViewHolder extends RecyclerView.ViewHolder {

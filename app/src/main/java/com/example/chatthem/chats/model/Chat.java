@@ -1,17 +1,21 @@
 package com.example.chatthem.chats.model;
 
+import com.google.gson.annotations.SerializedName;
+
 import java.io.Serializable;
 import java.time.OffsetDateTime;
 import java.util.List;
 
 public class Chat implements Serializable {
+    @SerializedName("_id")
     private String id;
     private String name;
     private List<String> member;
     private String type;
     private List<Seen> seen;
-    private OffsetDateTime createdAt;
-    private OffsetDateTime updatedAt;
+    private String createdAt;
+    private String updatedAt;
+    @SerializedName("__v")
     private long v;
     private Message lastMessage;
     private String receivedID;
@@ -59,19 +63,19 @@ public class Chat implements Serializable {
         this.seen = seen;
     }
 
-    public OffsetDateTime getCreatedAt() {
+    public String getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(OffsetDateTime createdAt) {
+    public void setCreatedAt(String createdAt) {
         this.createdAt = createdAt;
     }
 
-    public OffsetDateTime getUpdatedAt() {
+    public String getUpdatedAt() {
         return updatedAt;
     }
 
-    public void setUpdatedAt(OffsetDateTime updatedAt) {
+    public void setUpdatedAt(String updatedAt) {
         this.updatedAt = updatedAt;
     }
 

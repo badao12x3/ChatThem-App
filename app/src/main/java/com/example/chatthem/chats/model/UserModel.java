@@ -1,23 +1,103 @@
 package com.example.chatthem.chats.model;
 
+import com.google.gson.annotations.SerializedName;
+
 import java.io.Serializable;
 import java.time.OffsetDateTime;
 import java.util.List;
 
 public class UserModel implements Serializable {
+    @SerializedName("_id")
     private String id;
     private String phonenumber;
     private String username;
     private String password;
     private String gender;
     private String avatar;
+    private String birthday;
+    private String email;
+    private String cover_image;
+    private String address;
+    private String country;
+    private String city;
+    @SerializedName("blocked_inbox")
+
     private List<Object> blockedInbox;
+    @SerializedName("blocked_diary")
+
     private List<Object> blockedDiary;
+    @SerializedName("public_key")
+
     private String publicKey;
-    private OffsetDateTime createdAt;
-    private OffsetDateTime updatedAt;
+    private String createdAt;
+    private String updatedAt;
+    @SerializedName("__v")
     private long v;
     private String online;
+    private Boolean checked = false;
+
+
+
+    public UserModel(String phonenumber, String username) {
+        this.phonenumber = phonenumber;
+        this.username = username;
+    }
+
+    public Boolean getChecked() {
+        return checked;
+    }
+
+    public void setChecked(Boolean checked) {
+        this.checked = checked;
+    }
+
+    public String getBirthday() {
+        return birthday;
+    }
+
+    public void setBirthday(String birthday) {
+        this.birthday = birthday;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getCover_image() {
+        return cover_image;
+    }
+
+    public void setCover_image(String cover_image) {
+        this.cover_image = cover_image;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public String getCountry() {
+        return country;
+    }
+
+    public void setCountry(String country) {
+        this.country = country;
+    }
+
+    public String getCity() {
+        return city;
+    }
+
+    public void setCity(String city) {
+        this.city = city;
+    }
 
     public String getOnline() {
         return online;
@@ -99,19 +179,19 @@ public class UserModel implements Serializable {
         this.publicKey = publicKey;
     }
 
-    public OffsetDateTime getCreatedAt() {
+    public String getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(OffsetDateTime createdAt) {
+    public void setCreatedAt(String createdAt) {
         this.createdAt = createdAt;
     }
 
-    public OffsetDateTime getUpdatedAt() {
+    public String getUpdatedAt() {
         return updatedAt;
     }
 
-    public void setUpdatedAt(OffsetDateTime updatedAt) {
+    public void setUpdatedAt(String updatedAt) {
         this.updatedAt = updatedAt;
     }
 

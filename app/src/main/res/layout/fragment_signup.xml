@@ -238,6 +238,7 @@
             android:paddingTop="@dimen/_10sdp"
             android:paddingBottom="@dimen/_10sdp"
             android:layout_marginTop="@dimen/_40sdp"
+            android:layout_marginBottom="@dimen/_20sdp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"

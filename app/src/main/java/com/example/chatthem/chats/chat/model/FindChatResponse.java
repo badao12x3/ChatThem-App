@@ -7,15 +7,15 @@ import java.util.List;
 
 public class FindChatResponse {
 
-    private Chat data;
+    private ChatNoLastMessObj data;
     private String message;
     private String code;
 
-    public Chat getData() {
+    public ChatNoLastMessObj getData() {
         return data;
     }
 
-    public void setData(Chat data) {
+    public void setData(ChatNoLastMessObj data) {
         this.data = data;
     }
 

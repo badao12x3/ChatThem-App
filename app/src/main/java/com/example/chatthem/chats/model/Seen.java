@@ -1,8 +1,9 @@
 package com.example.chatthem.chats.model;
 
+import java.io.Serializable;
 import java.util.List;
 
-public class Seen {
+public class Seen implements Serializable {
     private String memberId, seen;
 
     public String getMemberId() {

@@ -1,6 +1,9 @@
 package com.example.chatthem.ECC;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.util.Base64;
 
 import org.bouncycastle.asn1.pkcs.PrivateKeyInfo;
@@ -23,6 +26,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
@@ -42,6 +47,7 @@ import java.security.PublicKey;
 import java.security.SecureRandom;
 import java.security.Security;
 import java.security.SignatureException;
+import java.security.UnrecoverableKeyException;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
@@ -137,20 +143,16 @@ public class ECCc {
     }
 
 
-    public static PrivateKey getPrivateKeyFromKeyStore(Context context, String alias, String keyPassword) {
-        try {
-            // Load the KeyStore
-            KeyStore keyStore =loadKeyStore(context);
+    public static PrivateKey getPrivateKeyFromKeyStore(Context context, String alias, String keyPassword) throws CertificateException, KeyStoreException, IOException, NoSuchAlgorithmException, SignatureException, NoSuchProviderException, InvalidKeyException, UnrecoverableKeyException {
+        // Load the KeyStore
+        KeyStore keyStore =loadKeyStore(context);
 
-            // Get the private key using the alias and key password
-            Key key = keyStore.getKey(alias, keyPassword.toCharArray());
-            if (key instanceof PrivateKey) {
-                return (PrivateKey) key;
-            } else {
-                System.err.println("The specified alias does not contain a private key.");
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
+        // Get the private key using the alias and key password
+        Key key = keyStore.getKey(alias, keyPassword.toCharArray());
+        if (key instanceof PrivateKey) {
+            return (PrivateKey) key;
+        } else {
+            System.err.println("The specified alias does not contain a private key.");
         }
 
         return null;
@@ -245,6 +247,71 @@ public class ECCc {
         }
 
         return decryptedText;
+    }
+    public static void encryptImageFromUri(Uri inputUri, String outputPath, SecretKey secretKey) throws Exception {
+
+        // Generate random IV
+//        byte[] iv1 = generateRandomIV();
+
+        // Encrypt image with AES
+        Cipher cipher = Cipher.getInstance("AES/CBC/PKCS7Padding");
+        cipher.init(Cipher.ENCRYPT_MODE, secretKey, new SecureRandom());
+
+        InputStream is = new FileInputStream(inputUri.getPath());
+        OutputStream os = new FileOutputStream(outputPath);
+        byte[] iv1 = cipher.getIV();
+        os.write(iv1);
+
+        byte[] buffer = new byte[16];
+
+        int bytesRead;
+
+
+        while ((bytesRead = is.read(buffer)) != -1) {
+            byte[] output = cipher.update(buffer, 0, bytesRead);
+            os.write(output);
+        }
+
+        byte[] output = cipher.doFinal();
+
+        os.write(output);
+
+        is.close();
+        os.flush();
+        os.close();
+    }
+    public static String getTempFilePath(Context context) {
+        File tempDir = context.getCacheDir(); // Thay context bằng đối tượng Context của ứng dụng
+        File tempFile = null;
+        try {
+            tempFile = File.createTempFile("encrypted_image", ".tmp", tempDir);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        return tempFile.getAbsolutePath();
+    }
+
+    public static Bitmap decryptImageFromFile(String filePath, SecretKey secretKey) throws Exception {
+        // Đọc dữ liệu từ file đã mã hóa
+        InputStream is = new FileInputStream(filePath);
+        byte[] encryptedData = new byte[is.available()];
+        byte[] iv1 = new byte[16];
+
+        is.read(encryptedData);
+        is.close();
+
+        byte[] encryptedBytes = new byte[encryptedData.length - iv1.length];
+        //populate iv with bytes:
+        System.arraycopy(encryptedData, 0, iv1, 0, 16);
+        //populate encryptedBytes with bytes:
+        System.arraycopy(encryptedData, iv1.length, encryptedBytes, 0, encryptedBytes.length);
+        // Giải mã dữ liệu
+        Cipher cipher = Cipher.getInstance("AES/CBC/PKCS7Padding");
+        cipher.init(Cipher.DECRYPT_MODE, secretKey, new IvParameterSpec(iv1));
+        byte[] decryptedData = cipher.doFinal(encryptedBytes);
+
+        // Tạo Bitmap từ dữ liệu đã giải mã
+        return BitmapFactory.decodeByteArray(decryptedData, 0, decryptedData.length);
     }
 
     public static String publicKeyToString(PublicKey publicKey) throws IOException {

@@ -5,8 +5,10 @@ import android.util.Log;
 import androidx.annotation.MainThread;
 
 import com.example.chatthem.authentication.model.LoginResponse;
+import com.example.chatthem.chats.chat.model.ChatNoLastMessObj;
 import com.example.chatthem.chats.chat.model.FindChatResponse;
 import com.example.chatthem.chats.chat.model.ListMessagesResponse;
+import com.example.chatthem.chats.chat.model.SendResponse;
 import com.example.chatthem.chats.model.Chat;
 import com.example.chatthem.chats.model.Message;
 import com.example.chatthem.networking.APIServices;
@@ -15,6 +17,7 @@ import com.example.chatthem.utilities.PreferenceManager;
 import com.google.gson.Gson;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -30,17 +33,21 @@ public class ChatPresenter {
 
     private final ChatContract.ViewInterface viewInterface;
     private final PreferenceManager preferenceManager;
-    private Disposable disposable;
+    private List<Disposable> disposables;
     private List<Message> messageList;
     private Chat chat;
+    private ChatNoLastMessObj chatNoLastMessObj;
+    private String token;
 
     public ChatPresenter(ChatContract.ViewInterface viewInterface, PreferenceManager preferenceManager) {
         this.viewInterface = viewInterface;
         this.preferenceManager = preferenceManager;
+        disposables = new ArrayList<>();
+        token = "Bearer " + preferenceManager.getString(Constants.KEY_TOKEN);
     }
 
-    public Disposable getDisposable() {
-        return disposable;
+    public List<Disposable> getDisposable() {
+        return disposables;
     }
 
     public List<Message> getMessageList() {
@@ -51,18 +58,22 @@ public class ChatPresenter {
         return chat;
     }
 
+    public ChatNoLastMessObj getChatNoLastMessObj() {
+        return chatNoLastMessObj;
+    }
+
     public void setChat(Chat chat) {
         this.chat = chat;
     }
 
     public void getMessages(String chatId){
-        APIServices.apiServices.getMessages("Bearer "+ preferenceManager.getString(Constants.KEY_TOKEN),chatId)
+        APIServices.apiServices.getMessages(token,chatId)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Observer<ListMessagesResponse>() {
                     @Override
                     public void onSubscribe(@NonNull Disposable d) {
-                        disposable = d;
+                        disposables.add( d);
                     }
 
                     @Override
@@ -83,18 +94,18 @@ public class ChatPresenter {
     }
 
     public void findChat(String userId) {
-        APIServices.apiServices.findChat("Bearer " + preferenceManager.getString(Constants.KEY_TOKEN), userId, preferenceManager.getString(Constants.KEY_USED_ID))
+        APIServices.apiServices.findChat(token, userId, preferenceManager.getString(Constants.KEY_USED_ID))
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Observer<FindChatResponse>() {
                     @Override
                     public void onSubscribe(@NonNull Disposable d) {
-                        disposable = d;
+                        disposables.add( d);
                     }
 
                     @Override
                     public void onNext(@NonNull FindChatResponse findChatResponse) {
-                        chat = findChatResponse.getData();
+                        chatNoLastMessObj = findChatResponse.getData();
                     }
 
                     @Override
@@ -137,4 +148,91 @@ public class ChatPresenter {
                 });
     }
 
+    public void createAndSendPrivate(String receiveId, String content,String typeChat, String typeMess) {
+        APIServices.apiServices.createPriAndsend(token,receiveId,content,typeChat,typeMess)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Observer<SendResponse>() {
+                    @Override
+                    public void onSubscribe(@NonNull Disposable d) {
+                        disposables.add( d);
+                    }
+
+                    @Override
+                    public void onNext(@NonNull SendResponse sendResponse) {
+                        chatNoLastMessObj = sendResponse.getData().getChat();
+                    }
+
+                    @Override
+                    public void onError(@NonNull Throwable e) {
+                        e.printStackTrace();
+
+                        viewInterface.onSendError();
+                    }
+
+                    @Override
+                    public void onComplete() {
+                        viewInterface.onSendSuccess();
+                    }
+                });
+    }
+
+    public void send(String receiveId, String content,String typeChat, String typeMess) {
+        APIServices.apiServices.send(token,receiveId,content,typeChat,typeMess)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Observer<SendResponse>() {
+                    @Override
+                    public void onSubscribe(@NonNull Disposable d) {
+                        disposables.add(d);
+                    }
+
+                    @Override
+                    public void onNext(@NonNull SendResponse sendResponse) {
+                        chatNoLastMessObj = sendResponse.getData().getChat();
+                    }
+
+                    @Override
+                    public void onError(@NonNull Throwable e) {
+                        e.printStackTrace();
+                        viewInterface.onSendError();
+                    }
+
+                    @Override
+                    public void onComplete() {
+                        viewInterface.onSendSuccess();
+
+                    }
+                });
+
+    }
+    public void createAndSendGroup(List<String> member, String name,String content, String typeChat, String typeMess) {
+        APIServices.apiServices.createGroupAndsend(token,member,name,content,typeChat, typeMess)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Observer<SendResponse>() {
+                    @Override
+                    public void onSubscribe(@NonNull Disposable d) {
+                        disposables.add(d);
+                    }
+
+                    @Override
+                    public void onNext(@NonNull SendResponse sendResponse) {
+                        chatNoLastMessObj = sendResponse.getData().getChat();
+                    }
+
+                    @Override
+                    public void onError(@NonNull Throwable e) {
+                        e.printStackTrace();
+
+                        viewInterface.onSendError();
+                    }
+
+                    @Override
+                    public void onComplete() {
+                        viewInterface.onSendSuccess();
+
+                    }
+                });
+    }
 }

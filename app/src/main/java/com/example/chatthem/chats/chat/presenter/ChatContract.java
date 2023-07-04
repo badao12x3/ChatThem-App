@@ -8,5 +8,9 @@ public class ChatContract {
         void onGetMessagesError();
 
         void onFindChatError();
+
+        void onSendError();
+
+        void onSendSuccess();
     }
 }

@@ -1,9 +1,13 @@
 package com.example.chatthem.authentication.login.presenter;
 
+import android.content.Context;
 import android.util.Log;
+import android.widget.Toast;
 
+import com.example.chatthem.ECC.ECCc;
 import com.example.chatthem.authentication.model.LoginResponse;
 import com.example.chatthem.authentication.model.User;
+import com.example.chatthem.chats.model.UserModel;
 import com.example.chatthem.networking.APIServices;
 import com.example.chatthem.utilities.Constants;
 import com.example.chatthem.utilities.PreferenceManager;
@@ -13,6 +17,14 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.security.InvalidKeyException;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.NoSuchProviderException;
+import java.security.PrivateKey;
+import java.security.SignatureException;
+import java.security.UnrecoverableKeyException;
+import java.security.cert.CertificateException;
 import java.util.Objects;
 
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
@@ -27,13 +39,14 @@ public class LogInPresenter {
     private LoginResponse mLoginResponse;
     private Disposable mDisposable;
     private PreferenceManager preferenceManager;
+    private Context context;
 
 
 
-    public LogInPresenter(LogInContract.ViewInterface viewInterface, PreferenceManager preferenceManager) {
+    public LogInPresenter(LogInContract.ViewInterface viewInterface, PreferenceManager preferenceManager, Context context) {
         this.viewInterface = viewInterface;
         this.preferenceManager = preferenceManager;
-
+        this.context = context;
     }
 
     public void login(String phone, String password){
@@ -100,22 +113,59 @@ public class LogInPresenter {
 
                         @Override
                         public void onComplete() {
-                            User user = mLoginResponse.getData();
+                            UserModel user = mLoginResponse.getData();
                             preferenceManager.putBoolean(Constants.KEY_IS_SIGNED_IN, true);
                             preferenceManager.putString(Constants.KEY_USED_ID, user.getId());
                             preferenceManager.putString(Constants.KEY_NAME, user.getUsername());
                             preferenceManager.putString(Constants.KEY_AVATAR, user.getAvatar());
-                            if (user.getCoverImage() != null){
-                                preferenceManager.putString(Constants.KEY_COVERIMAGE, user.getCoverImage());
+                            if (user.getCover_image() != null){
+                                preferenceManager.putString(Constants.KEY_COVERIMAGE, user.getCover_image());
                             }
-                            preferenceManager.putString(Constants.KEY_PHONE,user.getPhone());
+                            preferenceManager.putString(Constants.KEY_PHONE,user.getPhonenumber());
                             preferenceManager.putString(Constants.KEY_PASSWORD, password);
                             if (user.getPublicKey() != null){
                                 preferenceManager.putString(Constants.KEY_PUBLIC_KEY, user.getPublicKey());
                             }
+                            if (user.getGender() != null){
+                                preferenceManager.putString(Constants.KEY_GENDER, user.getGender());
+                            }
+                            if (user.getBirthday() != null){
+                                preferenceManager.putString(Constants.KEY_BIRTHDAY, user.getBirthday());
+                            }
+                            if (user.getEmail() != null){
+                                preferenceManager.putString(Constants.KEY_EMAIL, user.getEmail());
+                            }
+                            if (user.getCountry() != null){
+                                preferenceManager.putString(Constants.KEY_ADDRESS_COUNTRY, user.getCountry());
+                                preferenceManager.putString(Constants.KEY_ADDRESS_CITY, user.getCity());
+                                preferenceManager.putString(Constants.KEY_ADDRESS_DETAIL, user.getAddress());
+                            }
                             preferenceManager.putString(Constants.KEY_TOKEN, mLoginResponse.getToken());
-                            viewInterface.onLoginSuccess();
 
+
+
+
+                            try {
+                                //Lấy private Key từ KeyStore
+                                PrivateKey priKey = ECCc.getPrivateKeyFromKeyStore(
+                                        context,
+                                        phone,
+                                        password
+                                );
+                                //Lưu privateKey vào Preference cho dễ gọi lại, tăng hiệu năng máy
+                                if (priKey != null) {
+                                    String priKeyStr = ECCc.privateKeyToString(priKey);
+                                    preferenceManager.putString(Constants.KEY_PRIVATE_KEY, priKeyStr);
+                                }
+                                viewInterface.onLoginSuccess();
+
+                            } catch (IOException | CertificateException | KeyStoreException |
+                                     NoSuchAlgorithmException | SignatureException |
+                                     NoSuchProviderException | InvalidKeyException |
+                                     UnrecoverableKeyException e) {
+                                e.printStackTrace();
+                                Toast.makeText(context, "Không thể lấy được private Key", Toast.LENGTH_SHORT).show();
+                            }
                         }
                     });
         } catch (JSONException e) {

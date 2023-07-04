@@ -14,5 +14,9 @@ public class ChatsContract {
         void onAddNewChatClick();
 
         void onRecentUserChatClick(UserModel userModel);
+
+        void onGetMessagedSuccess();
+
+        void onGetMessagedError();
     }
 }

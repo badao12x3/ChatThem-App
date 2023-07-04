@@ -10,13 +10,17 @@ import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 
+import com.example.chatthem.chats.model.UserModel;
+
 import java.io.ByteArrayOutputStream;
 import java.text.SimpleDateFormat;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
 
@@ -28,6 +32,19 @@ public class Helpers {
         Bitmap previewBitmap = Bitmap.createScaledBitmap(bitmap, previewWidth, previewHeight, false);
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         previewBitmap.compress(Bitmap.CompressFormat.JPEG, 50, byteArrayOutputStream);
+        byte[] bytes = byteArrayOutputStream.toByteArray();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            return Base64.getEncoder().encodeToString(bytes);
+        }else{
+            return null;
+        }
+    }
+    public static String encodeCoverImage(Bitmap bitmap){
+        int previewWidth = 600;
+        int previewHeight = bitmap.getHeight()*previewWidth/bitmap.getWidth();
+        Bitmap previewBitmap = Bitmap.createScaledBitmap(bitmap, previewWidth, previewHeight, false);
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        previewBitmap.compress(Bitmap.CompressFormat.JPEG, 80, byteArrayOutputStream);
         byte[] bytes = byteArrayOutputStream.toByteArray();
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             return Base64.getEncoder().encodeToString(bytes);
@@ -70,17 +87,18 @@ public class Helpers {
                         Activity.INPUT_METHOD_SERVICE);
         if(inputMethodManager.isAcceptingText()){
             if (activity.getCurrentFocus() != null){
-                activity.getCurrentFocus().clearFocus();
+
                 inputMethodManager.hideSoftInputFromWindow(
                         activity.getCurrentFocus().getWindowToken(),
                         0
                 );
+                activity.getCurrentFocus().clearFocus();
             }
 
         }
     }
 
-    public static String formatTime(OffsetDateTime time){
+    public static String formatTime(String time){
         // Định nghĩa định dạng của đầu vào (UTC)
         SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
         inputFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
@@ -94,24 +112,24 @@ public class Helpers {
         Date now = new Date();
         String nowLocalDateTime = dateFormat.format(now);
         // Chuyển đổi sang thời gian địa phương
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-//            ZoneId localZone = ZoneId.systemDefault();
-            DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
-            DateTimeFormatter hourTimeFormatter = DateTimeFormatter.ofPattern("HH:mm a");
-//            String localDateTimeString = time.atZoneSameInstant(localZone).format(formatter);
-            String localDateTime = time.toLocalTime().format(dateTimeFormatter);
-
-            if (localDateTime.equals(nowLocalDateTime)){
-                return time.toLocalTime().format(hourTimeFormatter);
-            }else {
-                return localDateTime;
-            }
-        }else {
+//        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+////            ZoneId localZone = ZoneId.systemDefault();
+//            DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+//            DateTimeFormatter hourTimeFormatter = DateTimeFormatter.ofPattern("HH:mm a");
+////            String localDateTimeString = time.atZoneSameInstant(localZone).format(formatter);
+//            String localDateTime = time.toLocalTime().format(dateTimeFormatter);
+//
+//            if (localDateTime.equals(nowLocalDateTime)){
+//                return time.toLocalTime().format(hourTimeFormatter);
+//            }else {
+//                return localDateTime;
+//            }
+//        }else {
 
 //            SimpleDateFormat outputFormat = new SimpleDateFormat("dd-MM HH:mm:ss");
 
             try {
-                Date date = inputFormat.parse(time.toString());
+                Date date = inputFormat.parse(time);
                 String localDateTime = dateFormat.format(date);
 
                 if (localDateTime.equals(nowLocalDateTime)){
@@ -123,7 +141,36 @@ public class Helpers {
                 e.printStackTrace();
                 return time.toString();
             }
-        }
+//        }
 
+    }
+
+    public static List<UserModel> checkStringContain(String searchStr, List<UserModel> userModelList){
+        List<UserModel> result = new ArrayList<>();
+        for (UserModel u : userModelList){
+            if (u.getUsername().contains(searchStr)){
+                result.add(u);
+            }else if (u.getPhonenumber().contains(searchStr)){
+                result.add(u);
+            }
+        }
+        return result;
+
+//        boolean containsAllChars = true;
+//        for (char c : searchStr.toCharArray()) {
+//            boolean charFound = false;
+//            for (String str : stringList) {
+//                if (str.contains(String.valueOf(c))) {
+//                    charFound = true;
+//                    break;
+//                }
+//            }
+//            if (!charFound) {
+//                containsAllChars = false;
+//                break;
+//            }
+//        }
+//
+//        return containsAllChars;
     }
 }

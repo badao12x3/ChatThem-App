@@ -17,6 +17,8 @@ import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
+import com.example.chatthem.ECC.ECCc;
+import com.example.chatthem.ECC.TransferDataActivity;
 import com.example.chatthem.MainActivity;
 import com.example.chatthem.R;
 import com.example.chatthem.authentication.login.presenter.LogInContract;
@@ -31,6 +33,9 @@ import com.example.chatthem.utilities.PreferenceManager;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.io.IOException;
+import java.security.PrivateKey;
 
 public class LoginFragment extends Fragment implements LogInContract.ViewInterface {
 
@@ -54,9 +59,10 @@ public class LoginFragment extends Fragment implements LogInContract.ViewInterfa
         Helpers.setupUI(binding.LoginFragment, requireActivity());
         preferenceManager = new PreferenceManager(requireContext());
 
-        logInPresenter = new LogInPresenter(this, preferenceManager);
+        logInPresenter = new LogInPresenter(this, preferenceManager, requireContext());
         showAnimationFromStart();
         checkEnableLogin();
+        onEditTextStatusChange();
         setListener();
         return rootView;
     }
@@ -69,6 +75,7 @@ public class LoginFragment extends Fragment implements LogInContract.ViewInterfa
             if (isValidLoginDetails(user)){
                 binding.login.setVisibility(View.GONE);
                 binding.loading.setVisibility(View.VISIBLE);
+                binding.status.setVisibility(View.GONE);
                 logInPresenter.login(user.getPhone(),user.getPassword());
             }
         });
@@ -120,6 +127,36 @@ public class LoginFragment extends Fragment implements LogInContract.ViewInterfa
             return true;
         }
 
+    }
+    private void onEditTextStatusChange(){
+        int colorFocus = ContextCompat.getColor(requireActivity(), R.color.md_theme_light_primary);
+        int colorDefault = ContextCompat.getColor(requireActivity(), R.color.secondary_text);
+        binding.edtPhone.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View view, boolean hasFocus) {
+                if (hasFocus) {
+                    binding.phone.setBackgroundResource(R.drawable.background_input_good);
+                    binding.edtPhone.setHintTextColor(colorFocus);
+                }
+                else {
+                    binding.phone.setBackgroundResource(R.drawable.edit_text_bg);
+                    binding.edtPhone.setHintTextColor(colorDefault);
+                }
+            }
+        });
+        binding.edtPass.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View view, boolean hasFocus) {
+                if (hasFocus) {
+                    binding.password.setBackgroundResource(R.drawable.background_input_good);
+                    binding.edtPass.setHintTextColor(colorFocus);
+                }
+                else {
+                    binding.password.setBackgroundResource(R.drawable.edit_text_bg);
+                    binding.edtPass.setHintTextColor(colorDefault);
+                }
+            }
+        });
     }
 
     private void checkEnableLogin(){
@@ -189,6 +226,18 @@ public class LoginFragment extends Fragment implements LogInContract.ViewInterfa
         binding.loading.setVisibility(View.GONE);
         binding.status.setVisibility(View.INVISIBLE);
         Toast.makeText(requireActivity(), "Login Success", Toast.LENGTH_SHORT).show();
+
+        if (preferenceManager.getString(Constants.KEY_PRIVATE_KEY) != null){
+            Intent intent = new Intent(requireContext(), MainActivity.class);
+            startActivity(intent);
+            requireActivity().finish();
+        }else {
+            Intent intent = new Intent(requireContext(), TransferDataActivity.class);
+            startActivity(intent);
+            requireActivity().finish();
+        }
+
+
     }
 
     @Override
@@ -198,9 +247,6 @@ public class LoginFragment extends Fragment implements LogInContract.ViewInterfa
         binding.status.setText("Số điện thoại hoặc mật khẩu không đúng");
         binding.status.setVisibility(View.VISIBLE);
 
-        Intent intent = new Intent(requireContext(), MainActivity.class);
-        startActivity(intent);
-        requireActivity().finish();
     }
 
     @Override

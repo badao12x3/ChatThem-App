@@ -1,28 +1,36 @@
 package com.example.chatthem.chats.view;
 
 import android.content.Intent;
+import android.graphics.Rect;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.Toast;
 
 import com.example.chatthem.R;
 import com.example.chatthem.chats.chat.view.ChatActivity;
+import com.example.chatthem.chats.chat.view.ChatAdapter;
 import com.example.chatthem.chats.create_new_group_chat.view.CreateGroupChatActivity;
 import com.example.chatthem.chats.create_new_private_chat.view.CreatePrivateChatActivity;
 import com.example.chatthem.chats.model.Chat;
 import com.example.chatthem.chats.model.UserModel;
 import com.example.chatthem.chats.presenter.ChatsContract;
+import com.example.chatthem.chats.presenter.ChatsPresenter;
 import com.example.chatthem.databinding.FragmentChatsBinding;
 import com.example.chatthem.utilities.Constants;
+import com.example.chatthem.utilities.Helpers;
 import com.example.chatthem.utilities.PreferenceManager;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -37,6 +45,7 @@ public class ChatsFragment extends Fragment implements ChatsContract.ViewInterfa
     private FragmentChatsBinding binding;
 
     private PreferenceManager preferenceManager;
+    private ChatsPresenter chatsPresenter;
     private Animation fromBottomFabAnim;
     private Animation toBottomFabAnim;
     private Animation rotateClockWiseFabAnim;
@@ -51,14 +60,22 @@ public class ChatsFragment extends Fragment implements ChatsContract.ViewInterfa
                              Bundle savedInstanceState) {
         binding = FragmentChatsBinding.inflate(inflater,container,false);
         View rootView = binding.getRoot();
+        Helpers.setupUI(rootView, requireActivity());
         init();
+        chatsPresenter.getMessaged();
         setListener();
 
         return rootView;
     }
 
     private void init(){
+        binding.shimmerEffect.startShimmerAnimation();
         preferenceManager = new PreferenceManager(requireContext());
+        chatsPresenter = new ChatsPresenter(this,preferenceManager);
+        conversations = new ArrayList<>();
+        conversationsAdapter = new RecentConversationsAdapter(conversations,this);
+        binding.conversationRecycleView.setAdapter(conversationsAdapter);
+
         if (fromBottomFabAnim == null){
             fromBottomFabAnim = AnimationUtils.loadAnimation(requireContext(), R.anim.from_bottom_fab);
         }
@@ -69,7 +86,7 @@ public class ChatsFragment extends Fragment implements ChatsContract.ViewInterfa
             fromBottomBgAnim = AnimationUtils.loadAnimation(requireContext(), R.anim.from_bottom_anim);
         }
         if (toBottomBgAnim == null){
-            toBottomBgAnim = AnimationUtils.loadAnimation(requireContext(), R.anim.from_bottom_anim);
+            toBottomBgAnim = AnimationUtils.loadAnimation(requireContext(), R.anim.to_bottom_anim);
         }
         if (rotateAntiClockWiseFabAnim == null){
             rotateAntiClockWiseFabAnim = AnimationUtils.loadAnimation(requireContext(), R.anim.rotate_anti_clock_wise);
@@ -98,6 +115,13 @@ public class ChatsFragment extends Fragment implements ChatsContract.ViewInterfa
             startActivity(it);
         });
 
+        binding.swipeLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                chatsPresenter.getMessaged();
+            }
+        });
+
     }
 
     private void expandFab() {
@@ -122,6 +146,19 @@ public class ChatsFragment extends Fragment implements ChatsContract.ViewInterfa
         isExpanded = !isExpanded;
     }
 
+    public void dispatchTouchEvent(MotionEvent ev) {
+        if (ev.getAction() == MotionEvent.ACTION_DOWN) {
+
+            if (isExpanded) {
+                Rect outRect = new Rect();
+                binding.fabConstraint.getGlobalVisibleRect(outRect);
+                if (!outRect.contains((int) ev.getRawX(), (int) ev.getRawY())) {
+                    shrinkFab();
+                }
+            }
+        }
+    }
+
     @Override
     public void onConversionClicked(Chat chat) {
         Intent it = new Intent(requireContext(), ChatActivity.class);
@@ -140,5 +177,28 @@ public class ChatsFragment extends Fragment implements ChatsContract.ViewInterfa
         Intent it = new Intent(requireContext(), ChatActivity.class);
         it.putExtra(Constants.KEY_USER, userModel);
         startActivity(it);
+    }
+
+    @Override
+    public void onGetMessagedSuccess() {
+
+        conversations = chatsPresenter.getChatList();
+        conversationsAdapter.reset(conversations);
+        binding.conversationRecycleView.setVisibility(View.VISIBLE);
+        binding.shimmerEffect.stopShimmerAnimation();
+        binding.shimmerEffect.setVisibility(View.GONE);
+        binding.swipeLayout.setRefreshing(false);
+        binding.textErrorMessage.setVisibility(View.GONE);
+
+    }
+
+    @Override
+    public void onGetMessagedError() {
+        binding.shimmerEffect.stopShimmerAnimation();
+        binding.shimmerEffect.setVisibility(View.GONE);
+        binding.swipeLayout.setRefreshing(false);
+        binding.conversationRecycleView.setVisibility(View.GONE);
+        binding.textErrorMessage.setVisibility(View.VISIBLE);
+        binding.textErrorMessage.setText("Lấy dữ liệu xảy ra lỗi! Vui lòng thử lại!");
     }
 }

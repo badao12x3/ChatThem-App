@@ -89,4 +89,6 @@
     <color name="md_theme_dark_onSurface">#CFC5BE</color>
     <color name="md_theme_dark_surfaceVariant">#51453A</color>
     <color name="md_theme_dark_onSurfaceVariant">#D5C3B5</color>
+    <color name="primary_text">#51453A</color>
+    <color name="error">#BA1A1A</color>
 </resources>

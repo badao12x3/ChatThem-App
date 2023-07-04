@@ -1,18 +1,31 @@
 package com.example.chatthem.chats.model;
 
 import com.example.chatthem.authentication.model.User;
+import com.google.gson.annotations.SerializedName;
 
+import java.io.Serializable;
 import java.time.OffsetDateTime;
 
-public class Message {
+public class Message implements Serializable {
+    @SerializedName("_id")
     private String id;
     private String chat;
+    private Chat chatObject;
     private UserModel user;
     private String content;
     private String type;
-    private OffsetDateTime createdAt;
-    private OffsetDateTime updatedAt;
+    private String createdAt;
+    private String updatedAt;
+    @SerializedName("__v")
     private long v;
+
+    public Chat getChatObject() {
+        return chatObject;
+    }
+
+    public void setChatObject(Chat chatObject) {
+        this.chatObject = chatObject;
+    }
 
     public String getId() {
         return id;
@@ -54,19 +67,19 @@ public class Message {
         this.type = type;
     }
 
-    public OffsetDateTime getCreatedAt() {
+    public String getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(OffsetDateTime createdAt) {
+    public void setCreatedAt(String createdAt) {
         this.createdAt = createdAt;
     }
 
-    public OffsetDateTime getUpdatedAt() {
+    public String getUpdatedAt() {
         return updatedAt;
     }
 
-    public void setUpdatedAt(OffsetDateTime updatedAt) {
+    public void setUpdatedAt(String updatedAt) {
         this.updatedAt = updatedAt;
     }
 

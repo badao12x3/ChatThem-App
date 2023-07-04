@@ -8,6 +8,15 @@ public class ListMessagesResponse {
     private List<Message> data;
     private String message;
     private String code;
+    private String detail;
+
+    public String getDetail() {
+        return detail;
+    }
+
+    public void setDetail(String detail) {
+        this.detail = detail;
+    }
 
     public List<Message> getData() {
         return data;
