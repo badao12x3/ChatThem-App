@@ -1,15 +1,13 @@
-package com.example.chatthem.ECC;
+package com.example.chatthem.cryptophy;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.Toast;
 
 import com.example.chatthem.MainActivity;
-import com.example.chatthem.R;
 import com.example.chatthem.databinding.ActivityTransferDataBinding;
 import com.example.chatthem.utilities.Constants;
 import com.example.chatthem.utilities.PreferenceManager;

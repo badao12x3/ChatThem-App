@@ -1,6 +1,7 @@
 package com.example.chatthem.chats.chat.presenter;
 
 import android.util.Log;
+import android.widget.Toast;
 
 import androidx.annotation.MainThread;
 
@@ -12,9 +13,13 @@ import com.example.chatthem.chats.chat.model.SendResponse;
 import com.example.chatthem.chats.model.Chat;
 import com.example.chatthem.chats.model.Message;
 import com.example.chatthem.networking.APIServices;
+import com.example.chatthem.networking.SocketManager;
 import com.example.chatthem.utilities.Constants;
 import com.example.chatthem.utilities.PreferenceManager;
 import com.google.gson.Gson;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -27,6 +32,8 @@ import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.Observer;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.schedulers.Schedulers;
+import io.socket.client.Socket;
+import io.socket.emitter.Emitter;
 import retrofit2.HttpException;
 
 public class ChatPresenter {
@@ -38,14 +45,86 @@ public class ChatPresenter {
     private Chat chat;
     private ChatNoLastMessObj chatNoLastMessObj;
     private String token;
+    private SocketManager socketManager ;
+    private Socket socket;
 
     public ChatPresenter(ChatContract.ViewInterface viewInterface, PreferenceManager preferenceManager) {
         this.viewInterface = viewInterface;
         this.preferenceManager = preferenceManager;
         disposables = new ArrayList<>();
         token = "Bearer " + preferenceManager.getString(Constants.KEY_TOKEN);
+        //socket
+        socketManager = SocketManager.getInstance();
+        socket = socketManager.getSocket();
+
     }
 
+    public void joinChat(String userId, String username,String avatar, String chatId, String typeRoom, String publicKey){
+        // Gửi emit
+        JSONObject data = new JSONObject();
+        try {
+            data.put("userId", userId);
+            data.put("username", username);
+            data.put("avatar", avatar);
+            data.put("typeRoom", typeRoom);
+            data.put("publicKey", publicKey);
+            data.put("room", chatId);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        if (socket != null) {
+            socket.emit("joinRoom", data);
+        } else {
+            // Xử lý trường hợp Socket.IO object là null
+        }
+    }
+    public void registerOnMessageEvent(){
+        // Đăng ký lắng nghe sự kiện
+        if (socket != null) {
+            socket.on("message", new Emitter.Listener() {
+                @Override
+                public void call(Object... args) {
+                    // Xử lý dữ liệu nhận được từ sự kiện
+                    if (args.length > 0) {
+                        JSONObject receivedData = (JSONObject) args[0];
+                        try {
+                            String room = receivedData.getString("room");
+                            String username = receivedData.getString("username");
+                            String text = receivedData.getString("text");
+                            String time = receivedData.getString("time");
+                            String userId = receivedData.getString("userId");
+                            String avatar = receivedData.getString("avatar");
+                            String typeRoom = receivedData.getString("typeRoom");
+                            String publicKey = receivedData.getString("publicKey");
+                            String typeMess = receivedData.getString("typeMess");
+                            // Xử lý message nhận được từ sự kiện
+
+                            viewInterface.receiveNewMsgRealtime(userId, username, avatar, room, typeRoom, publicKey, text, typeMess, time);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+            });
+        } else {
+            // Xử lý trường hợp Socket.IO object là null
+        }
+    }
+    public void leaveChat(String username, String chatId){
+        // Gửi emit
+        JSONObject data = new JSONObject();
+        try {
+            data.put("username", username);
+            data.put("room", chatId);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        if (socket != null) {
+            socket.emit("leaveRoom", data);
+        } else {
+            // Xử lý trường hợp Socket.IO object là null
+        }
+    }
     public List<Disposable> getDisposable() {
         return disposables;
     }
@@ -172,7 +251,7 @@ public class ChatPresenter {
 
                     @Override
                     public void onComplete() {
-                        viewInterface.onSendSuccess();
+                        viewInterface.onCreateAndSendSuccess(content, typeMess);
                     }
                 });
     }
@@ -200,7 +279,7 @@ public class ChatPresenter {
 
                     @Override
                     public void onComplete() {
-                        viewInterface.onSendSuccess();
+                        viewInterface.onSendSuccess(content, typeMess);
 
                     }
                 });
@@ -230,9 +309,26 @@ public class ChatPresenter {
 
                     @Override
                     public void onComplete() {
-                        viewInterface.onSendSuccess();
+                        viewInterface.onCreateAndSendSuccess(content, typeMess);
 
                     }
                 });
+    }
+
+    public void sendRealtime(String content,String typeMess, String room) {
+        // Gửi emit
+        JSONObject data = new JSONObject();
+        try {
+            data.put("msg", content);
+            data.put("typeMess", typeMess);
+            data.put("room", room);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        if (socket != null) {
+            socket.emit("chatMessage", data);
+        } else {
+            // Xử lý trường hợp Socket.IO object là null
+        }
     }
 }

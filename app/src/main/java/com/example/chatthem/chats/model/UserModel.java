@@ -3,7 +3,6 @@ package com.example.chatthem.chats.model;
 import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
-import java.time.OffsetDateTime;
 import java.util.List;
 
 public class UserModel implements Serializable {
@@ -36,12 +35,13 @@ public class UserModel implements Serializable {
     private String online;
     private Boolean checked = false;
 
-
-
-    public UserModel(String phonenumber, String username) {
-        this.phonenumber = phonenumber;
+    public UserModel(String id, String username, String avatar, String publicKey) {
+        this.id = id;
         this.username = username;
+        this.avatar = avatar;
+        this.publicKey = publicKey;
     }
+
 
     public Boolean getChecked() {
         return checked;

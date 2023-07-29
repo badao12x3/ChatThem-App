@@ -98,15 +98,15 @@ public class Helpers {
         }
     }
 
-    public static String formatTime(String time){
+    public static String formatTime(String time, boolean inChat){
         // Định nghĩa định dạng của đầu vào (UTC)
         SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
         inputFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
 
         // Định nghĩa định dạng của đầu ra (giờ địa phương)
-        SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM");
         dateFormat.setTimeZone(TimeZone.getDefault());
-        SimpleDateFormat hourFormat = new SimpleDateFormat("HH:mm a");
+        SimpleDateFormat hourFormat = new SimpleDateFormat("HH:mm");
         hourFormat.setTimeZone(TimeZone.getDefault());
 
         Date now = new Date();
@@ -126,17 +126,21 @@ public class Helpers {
 //            }
 //        }else {
 
-//            SimpleDateFormat outputFormat = new SimpleDateFormat("dd-MM HH:mm:ss");
+            SimpleDateFormat outputFormat = new SimpleDateFormat("HH:mm dd-MM");
 
             try {
                 Date date = inputFormat.parse(time);
                 String localDateTime = dateFormat.format(date);
-
-                if (localDateTime.equals(nowLocalDateTime)){
-                    return hourFormat.format(date);
+                if (inChat){
+                    return outputFormat.format(date);
                 }else {
-                    return localDateTime;
+                    if (localDateTime.equals(nowLocalDateTime)){
+                        return hourFormat.format(date);
+                    }else {
+                        return localDateTime;
+                    }
                 }
+
             } catch (Exception e) {
                 e.printStackTrace();
                 return time.toString();

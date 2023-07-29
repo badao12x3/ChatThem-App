@@ -10,6 +10,8 @@ import com.example.chatthem.chats.chat.model.ListMessagesResponse;
 import com.example.chatthem.chats.chat.model.SendResponse;
 import com.example.chatthem.chats.create_new_group_chat.model.SearchUserResponse;
 import com.example.chatthem.chats.model.ListChatResponse;
+import com.example.chatthem.chats.private_chat_info.model.StatusFriendRes;
+import com.example.chatthem.contacts.manage_request_friend.model.ListReqRes;
 import com.example.chatthem.contacts.model.ListFriendResponse;
 import com.example.chatthem.profile.model.ChangePassResponse;
 import com.example.chatthem.profile.model.EditProfileResponse;
@@ -194,18 +196,34 @@ public interface APIServices {
             @Field("newPassword") String newPassword
     );
 
-
+    @FormUrlEncoded
+    @POST("friends/get-status-friend")
+    Observable<StatusFriendRes> getStatusFriend(
+            @Header("Authorization") String token,
+            @Field("receiver") String receiver
+    );
     @FormUrlEncoded
     @POST("friends/list")
     Observable<ListFriendResponse> getListFriend(
             @Header("Authorization") String token,
             @Field("user_id") String user_id
     );
-    @FormUrlEncoded
+    @Headers({ "Content-Type: application/json;charset=UTF-8"})
     @GET("friends/get-requested-friend")
-    Observable<ChangePassResponse> getRequestFriend(
+    Observable<ListReqRes> getRequestFriend(
             @Header("Authorization") String token
     );
+    @POST("friends/get-send-request")
+    Observable<ListReqRes> getSendRequestFriend(
+            @Header("Authorization") String token
+    );
+    @FormUrlEncoded
+    @POST("friends/delete-request")
+    Observable<ChangePassResponse> delRequest(
+            @Header("Authorization") String token,
+            @Field("receiver") String receiver
+    );
+
     @FormUrlEncoded
     @POST("friends/set-requested-friend")
     Observable<ChangePassResponse> setRequestFriend(

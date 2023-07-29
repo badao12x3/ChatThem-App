@@ -30,6 +30,7 @@ public class Constants {
     public static final String KEY_USER = "user";
     public static final String KEY_ROOM = "room";
     public static final String KEY_COLLECTION_CHAT = "chat";
+    public static final String KEY_COLLECTION_CHAT_NO_LMSG = "chatNoLastMsg";
     public static final String KEY_SENDER_ID = "senderId";
     public static final String KEY_RECEIVER_ID = "receiverId";
     public static final String MESS_SENDER_ID = "messSenderId";
@@ -67,7 +68,7 @@ public class Constants {
     public static final String KEY_TYPE_TEXT = "TEXT";
     public static final String KEY_TYPE_IMAGE = "IMAGE";
     public static final String BASE_URL = "http://192.168.1.41:8000/api/v1/";
-    public static final String BASE_URL1 = "http://127.0.0.1:8000/api/v1/";
+    public static final String BASE_URL_SOCKET = "http://192.168.1.41:16000";
 
     public static HashMap<String, String> getRemoteMsgHeaders(){
         if(remotoMsgHeaders == null){

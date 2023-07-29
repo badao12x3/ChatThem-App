@@ -77,6 +77,11 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         }
     }
 
+    public void addData() {
+        notifyItemRangeInserted(chatMessages.size(),chatMessages.size());
+
+    }
+
     class SentMessageViewHolder extends RecyclerView.ViewHolder {
         private final ItemContainerSentMessageBinding binding;
 
@@ -87,7 +92,7 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
         void setData(Message chatMessage, int position) {
             binding.textMessage.setText(chatMessage.getContent());
-            binding.textTime.setText(Helpers.formatTime(chatMessage.getUpdatedAt()));
+            binding.textTime.setText(Helpers.formatTime(chatMessage.getUpdatedAt(),true));
             binding.getRoot().setOnClickListener(v->{
                 if(binding.textTime.getVisibility() == View.VISIBLE){
                     binding.textTime.setVisibility(View.GONE);
@@ -110,7 +115,7 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         void setData(Message chatMessage) {
             binding.imageProfile.setImageBitmap(Helpers.getBitmapFromEncodedString(chatMessage.getUser().getAvatar()));
             binding.textMessage.setText(chatMessage.getContent());
-            binding.textTime.setText(Helpers.formatTime(chatMessage.getUpdatedAt()));
+            binding.textTime.setText(Helpers.formatTime(chatMessage.getUpdatedAt(), true));
             binding.getRoot().setOnClickListener(v->{
                 if(binding.textTime.getVisibility() == View.VISIBLE){
                     binding.textTime.setVisibility(View.GONE);

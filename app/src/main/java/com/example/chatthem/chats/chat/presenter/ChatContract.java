@@ -11,6 +11,9 @@ public class ChatContract {
 
         void onSendError();
 
-        void onSendSuccess();
+        void onSendSuccess(String content, String typeMess);
+        void onCreateAndSendSuccess(String content, String typeMess);
+
+        void receiveNewMsgRealtime(String userId,String username,String avatar,String room,String typeRoom,String publicKey,String text,String typeMess, String time);
     }
 }

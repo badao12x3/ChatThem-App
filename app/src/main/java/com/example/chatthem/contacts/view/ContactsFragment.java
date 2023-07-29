@@ -13,13 +13,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
-import com.example.chatthem.ECC.ECCc;
-import com.example.chatthem.MainActivity;
-import com.example.chatthem.R;
 import com.example.chatthem.chats.create_new_private_chat.view.CreatePrivateChatActivity;
-import com.example.chatthem.databinding.FragmentChatsBinding;
+import com.example.chatthem.contacts.manage_request_friend.view.ManageReqFrieActivity;
 import com.example.chatthem.databinding.FragmentContactsBinding;
-import com.example.chatthem.profile.view.QR_code;
 import com.example.chatthem.utilities.Constants;
 import com.example.chatthem.utilities.Helpers;
 import com.example.chatthem.utilities.PreferenceManager;
@@ -28,12 +24,6 @@ import com.google.zxing.WriterException;
 import com.journeyapps.barcodescanner.BarcodeEncoder;
 import com.journeyapps.barcodescanner.ScanContract;
 import com.journeyapps.barcodescanner.ScanOptions;
-
-import org.json.JSONObject;
-
-import java.lang.ref.PhantomReference;
-import java.security.PrivateKey;
-import java.security.PublicKey;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -75,8 +65,9 @@ public class ContactsFragment extends Fragment {
     }
 
     private void setListener(){
-        binding.cardviewListContact.setOnClickListener(v->{
+        binding.cardviewListFriend.setOnClickListener(v->{
             Intent it = new Intent(requireContext(), CreatePrivateChatActivity.class);
+            it.putExtra("title", "Danh sách bạn bè");
             startActivity(it);
         });
         binding.btnScan.setOnClickListener(v->{
@@ -86,6 +77,10 @@ public class ContactsFragment extends Fragment {
             options.setBeepEnabled(true);
             options.setOrientationLocked(false);
             barcodeLauncher.launch(options);
+        });
+        binding.cardviewRequest.setOnClickListener(v->{
+            Intent it = new Intent(requireContext(), ManageReqFrieActivity.class);
+            startActivity(it);
         });
     }
 

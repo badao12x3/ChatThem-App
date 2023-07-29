@@ -43,6 +43,7 @@ public class CreatePrivateChatActivity extends AppCompatActivity implements Crea
         binding = ActivityCreatePrivateChatBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
         Helpers.setupUI(binding.getRoot(), this);
+        setupTitle();
 
         binding.shimmerEffect.setVisibility(View.VISIBLE);
         binding.shimmerEffect.startShimmerAnimation();
@@ -58,8 +59,11 @@ public class CreatePrivateChatActivity extends AppCompatActivity implements Crea
 
         createChatPrivatePresenter.getListFriend(null);
 
-
         setListener();
+    }
+
+    public void setupTitle(){
+        binding.textView.setText(getIntent().getStringExtra("title"));
     }
 
     private void setListener(){

@@ -3,18 +3,13 @@ package com.example.chatthem.authentication.signup.signup.presenter;
 import android.content.Context;
 import android.util.Log;
 
-import com.example.chatthem.ECC.ECCc;
-import com.example.chatthem.authentication.login.presenter.LogInContract;
-import com.example.chatthem.authentication.model.LoginResponse;
+import com.example.chatthem.cryptophy.ECCc;
 import com.example.chatthem.authentication.model.SignupResponse;
 import com.example.chatthem.authentication.model.User;
 import com.example.chatthem.networking.APIServices;
 import com.example.chatthem.utilities.Constants;
 import com.example.chatthem.utilities.PreferenceManager;
 import com.google.gson.Gson;
-
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.io.IOException;
 import java.security.InvalidKeyException;

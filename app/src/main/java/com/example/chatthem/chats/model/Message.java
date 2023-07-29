@@ -19,6 +19,14 @@ public class Message implements Serializable {
     @SerializedName("__v")
     private long v;
 
+    public Message(String chat, UserModel user, String content, String type, String updatedAt) {
+        this.chat = chat;
+        this.user = user;
+        this.content = content;
+        this.type = type;
+        this.updatedAt = updatedAt;
+    }
+
     public Chat getChatObject() {
         return chatObject;
     }

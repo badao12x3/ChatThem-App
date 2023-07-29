@@ -55,7 +55,9 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:gravity="center">
+            android:gravity="center"
+            android:paddingStart="@dimen/_10sdp"
+            android:paddingEnd="@dimen/_10sdp">
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -67,9 +69,10 @@
                 android:layout_marginBottom="@dimen/_10sdp"
                 app:cardElevation="@dimen/_5sdp"
                 app:cardCornerRadius="@dimen/_10sdp"
-                android:layout_marginTop="@dimen/_10sdp">
+                android:layout_marginTop="@dimen/_20sdp">
 
                 <LinearLayout
+                    android:id="@+id/btn_detail_profile"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
@@ -117,6 +120,7 @@
                 app:cardCornerRadius="@dimen/_10sdp">
 
                 <LinearLayout
+                    android:id="@+id/status_friend"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
@@ -135,7 +139,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:fontFamily="@font/montserrat"
-                        android:text="Xem trạng thái bạn bè"
+                        android:text="Xem tình trạng bạn bè"
                         android:textColor="@color/md_theme_light_onSurfaceVariant"
                         android:textSize="@dimen/_13sdp"
                         android:gravity="start"
@@ -151,6 +155,75 @@
 
             </androidx.cardview.widget.CardView>
 
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/textView"
+                android:layout_marginStart="@dimen/_10sdp"
+                android:layout_marginEnd="@dimen/_10sdp"
+                android:layout_marginBottom="@dimen/_10sdp"
+                app:cardElevation="@dimen/_5sdp"
+                app:cardCornerRadius="@dimen/_10sdp"
+                android:layout_marginTop="@dimen/_30sdp">
+
+                <LinearLayout
+                    android:id="@+id/delete_chat"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:padding="@dimen/_10sdp">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:fontFamily="@font/montserrat"
+                        android:text="Xóa cuộc trò chuyện"
+                        android:textColor="@color/error"
+                        android:textSize="@dimen/_13sdp"
+                        android:gravity="center"
+                        android:layout_gravity="center"
+                        android:layout_marginStart="@dimen/_10sdp"/>
+
+                </LinearLayout>
+
+            </androidx.cardview.widget.CardView>
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/textView"
+                android:layout_marginStart="@dimen/_10sdp"
+                android:layout_marginEnd="@dimen/_10sdp"
+                android:layout_marginBottom="@dimen/_10sdp"
+                app:cardElevation="@dimen/_5sdp"
+                app:cardCornerRadius="@dimen/_10sdp">
+
+                <LinearLayout
+                    android:id="@+id/block"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:padding="@dimen/_10sdp"
+                    android:background="@color/md_theme_light_errorContainer">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:fontFamily="@font/montserrat"
+                        android:textColor="@color/md_theme_dark_errorContainer"
+                        android:text="Chặn"
+                        android:textSize="@dimen/_13sdp"
+                        android:gravity="center"
+                        android:layout_gravity="center"
+                        android:layout_marginStart="@dimen/_10sdp"/>
+                </LinearLayout>
+
+            </androidx.cardview.widget.CardView>
         </LinearLayout>
     </ScrollView>
 

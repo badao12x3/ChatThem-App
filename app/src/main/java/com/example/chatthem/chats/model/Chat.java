@@ -18,7 +18,7 @@ public class Chat implements Serializable {
     @SerializedName("__v")
     private long v;
     private Message lastMessage;
-    private String receivedID;
+    private String receivedId;
     private String avatar;
     private String online;
 
@@ -96,11 +96,11 @@ public class Chat implements Serializable {
     }
 
     public String getReceivedID() {
-        return receivedID;
+        return receivedId;
     }
 
     public void setReceivedID(String receivedID) {
-        this.receivedID = receivedID;
+        this.receivedId = receivedID;
     }
 
     public String getAvatar() {

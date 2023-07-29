@@ -1,4 +1,4 @@
-package com.example.chatthem.ECC;
+package com.example.chatthem.cryptophy;
 
 import android.content.Context;
 import android.graphics.Bitmap;

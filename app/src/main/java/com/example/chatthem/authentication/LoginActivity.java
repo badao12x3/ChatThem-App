@@ -5,7 +5,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.os.Bundle;
 
-import com.example.chatthem.ECC.TransferDataActivity;
 import com.example.chatthem.MainActivity;
 import com.example.chatthem.databinding.ActivityLoginBinding;
 import com.example.chatthem.utilities.Constants;

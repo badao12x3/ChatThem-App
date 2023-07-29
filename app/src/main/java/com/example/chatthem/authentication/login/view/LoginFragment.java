@@ -6,7 +6,6 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.text.method.HideReturnsTransformationMethod;
 import android.text.method.PasswordTransformationMethod;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,25 +16,16 @@ import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
-import com.example.chatthem.ECC.ECCc;
-import com.example.chatthem.ECC.TransferDataActivity;
+import com.example.chatthem.cryptophy.TransferDataActivity;
 import com.example.chatthem.MainActivity;
 import com.example.chatthem.R;
 import com.example.chatthem.authentication.login.presenter.LogInContract;
 import com.example.chatthem.authentication.login.presenter.LogInPresenter;
 import com.example.chatthem.authentication.model.User;
 import com.example.chatthem.databinding.FragmentLoginBinding;
-import com.example.chatthem.databinding.FragmentSignupBinding;
-import com.example.chatthem.networking.APIServices;
 import com.example.chatthem.utilities.Constants;
 import com.example.chatthem.utilities.Helpers;
 import com.example.chatthem.utilities.PreferenceManager;
-
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.IOException;
-import java.security.PrivateKey;
 
 public class LoginFragment extends Fragment implements LogInContract.ViewInterface {
 

@@ -112,6 +112,7 @@ public class ChatsFragment extends Fragment implements ChatsContract.ViewInterfa
 
         binding.shareFabBtn.setOnClickListener(v->{
             Intent it = new Intent(requireContext(), CreatePrivateChatActivity.class);
+            it.putExtra("title", "Tin nhắn mới");
             startActivity(it);
         });
 

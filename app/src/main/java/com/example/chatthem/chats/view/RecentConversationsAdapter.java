@@ -75,7 +75,7 @@ public class RecentConversationsAdapter extends RecyclerView.Adapter<RecentConve
             binding.imageProfile.setImageBitmap(getConversionImage(chatMessage.getAvatar()));
             binding.textName.setText(chatMessage.getName());
             binding.textRecentMessage.setText(chatMessage.getLastMessage().getContent());
-            binding.textTime.setText(Helpers.formatTime(chatMessage.getLastMessage().getUpdatedAt()));
+            binding.textTime.setText(Helpers.formatTime(chatMessage.getLastMessage().getUpdatedAt(),false));
 
             binding.getRoot().setOnClickListener(view -> {
                 conversionListener.onConversionClicked(chatMessage);

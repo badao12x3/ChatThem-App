@@ -4,9 +4,8 @@ import android.content.Context;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.example.chatthem.ECC.ECCc;
+import com.example.chatthem.cryptophy.ECCc;
 import com.example.chatthem.authentication.model.LoginResponse;
-import com.example.chatthem.authentication.model.User;
 import com.example.chatthem.chats.model.UserModel;
 import com.example.chatthem.networking.APIServices;
 import com.example.chatthem.utilities.Constants;
