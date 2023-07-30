@@ -18,5 +18,9 @@ public class ChatsContract {
         void onGetMessagedSuccess();
 
         void onGetMessagedError();
+
+        void onNewChatCreate();
+
+        void receiveNewMsgRealtime();
     }
 }

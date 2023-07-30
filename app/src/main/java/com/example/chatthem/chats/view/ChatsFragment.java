@@ -21,6 +21,7 @@ import com.example.chatthem.chats.chat.view.ChatAdapter;
 import com.example.chatthem.chats.create_new_group_chat.view.CreateGroupChatActivity;
 import com.example.chatthem.chats.create_new_private_chat.view.CreatePrivateChatActivity;
 import com.example.chatthem.chats.model.Chat;
+import com.example.chatthem.chats.model.Message;
 import com.example.chatthem.chats.model.UserModel;
 import com.example.chatthem.chats.presenter.ChatsContract;
 import com.example.chatthem.chats.presenter.ChatsPresenter;
@@ -72,6 +73,10 @@ public class ChatsFragment extends Fragment implements ChatsContract.ViewInterfa
         binding.shimmerEffect.startShimmerAnimation();
         preferenceManager = new PreferenceManager(requireContext());
         chatsPresenter = new ChatsPresenter(this,preferenceManager);
+
+        chatsPresenter.registerOnMessageEvent();
+        chatsPresenter.registerOnCreateRoomEvent();
+
         conversations = new ArrayList<>();
         conversationsAdapter = new RecentConversationsAdapter(conversations,this);
         binding.conversationRecycleView.setAdapter(conversationsAdapter);
@@ -190,7 +195,9 @@ public class ChatsFragment extends Fragment implements ChatsContract.ViewInterfa
         binding.shimmerEffect.setVisibility(View.GONE);
         binding.swipeLayout.setRefreshing(false);
         binding.textErrorMessage.setVisibility(View.GONE);
-
+        for (Chat chat : conversations){
+            chatsPresenter.joinChat(preferenceManager.getString(Constants.KEY_USED_ID),preferenceManager.getString(Constants.KEY_NAME),preferenceManager.getString(Constants.KEY_AVATAR), chat.getId(), chat.getType(), preferenceManager.getString(Constants.KEY_PUBLIC_KEY));
+        }
     }
 
     @Override
@@ -201,5 +208,21 @@ public class ChatsFragment extends Fragment implements ChatsContract.ViewInterfa
         binding.conversationRecycleView.setVisibility(View.GONE);
         binding.textErrorMessage.setVisibility(View.VISIBLE);
         binding.textErrorMessage.setText("Lấy dữ liệu xảy ra lỗi! Vui lòng thử lại!");
+    }
+
+    @Override
+    public void onNewChatCreate() {
+        chatsPresenter.getMessaged();
+    }
+
+    @Override
+    public void receiveNewMsgRealtime() {
+        chatsPresenter.getMessaged();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        chatsPresenter.getMessaged();
     }
 }

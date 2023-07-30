@@ -26,6 +26,10 @@ import java.util.TimeZone;
 
 public class Helpers {
 
+    public static void main(String[] args) {
+//        formatTime("2023-06-07T11:18:52.843+00:00", true);
+//        formatTime("2023-07-30T09:18:52.843+07:00", true);
+    }
     public static String encodeImage(Bitmap bitmap){
         int previewWidth = 150;
         int previewHeight = bitmap.getHeight()*previewWidth/bitmap.getWidth();

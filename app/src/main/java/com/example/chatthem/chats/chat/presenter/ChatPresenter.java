@@ -78,6 +78,21 @@ public class ChatPresenter {
             // Xử lý trường hợp Socket.IO object là null
         }
     }
+    public void createChat(String chatId, String typeRoom){
+        // Gửi emit
+        JSONObject data = new JSONObject();
+        try {
+            data.put("room", chatId);
+            data.put("typeRoom", typeRoom);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        if (socket != null) {
+            socket.emit("createRoom", data);
+        } else {
+            // Xử lý trường hợp Socket.IO object là null
+        }
+    }
     public void registerOnMessageEvent(){
         // Đăng ký lắng nghe sự kiện
         if (socket != null) {

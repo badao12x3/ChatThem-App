@@ -58,7 +58,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:layout_marginEnd="@dimen/_10sdp"
-                android:textSize="@dimen/_14sdp"
+                android:textSize="@dimen/_10sdp"
                 android:text="Xác nhận"/>
             <Button
                 android:id="@+id/remove"
@@ -67,7 +67,7 @@
                 android:layout_weight="1"
                 android:backgroundTint="@color/md_theme_dark_inverseSurface"
                 android:textColor="@color/md_theme_light_onSurfaceVariant"
-                android:textSize="@dimen/_14sdp"
+                android:textSize="@dimen/_10sdp"
                 android:text="Xóa"/>
         </LinearLayout>
 

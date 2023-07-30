@@ -1,9 +1,15 @@
 package com.example.chatthem.profile.presenter;
 
+import android.content.Context;
+
+import com.example.chatthem.cryptophy.ECCc;
 import com.example.chatthem.networking.APIServices;
 import com.example.chatthem.profile.model.ChangePassResponse;
 import com.example.chatthem.utilities.Constants;
 import com.example.chatthem.utilities.PreferenceManager;
+
+import java.security.PrivateKey;
+import java.security.PublicKey;
 
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 import io.reactivex.rxjava3.annotations.NonNull;
@@ -16,10 +22,12 @@ public class ChangePassPresenter {
     private final ChangePassContract.ViewInterface viewInterface;
     private final PreferenceManager preferenceManager;
     private Disposable disposable;
+    private Context context;
 
-    public ChangePassPresenter(ChangePassContract.ViewInterface viewInterface, PreferenceManager preferenceManager) {
+    public ChangePassPresenter(ChangePassContract.ViewInterface viewInterface, PreferenceManager preferenceManager, Context context) {
         this.viewInterface = viewInterface;
         this.preferenceManager = preferenceManager;
+        this.context = context;
     }
 
     public Disposable getDisposable() {
@@ -50,6 +58,21 @@ public class ChangePassPresenter {
                     @Override
                     public void onComplete() {
                         preferenceManager.putString(Constants.KEY_PASSWORD, newPass);
+
+                        PrivateKey privateKey = null;
+                        PublicKey publicKey = null;
+
+                        try {
+                            ECCc.deletePrivateKeyFromKeyStore( context,preferenceManager.getString(Constants.KEY_PHONE));
+                            privateKey = ECCc.stringToPrivateKey(preferenceManager.getString(Constants.KEY_PRIVATE_KEY));
+                            publicKey = ECCc.stringToPublicKey(preferenceManager.getString(Constants.KEY_PUBLIC_KEY));
+                            ECCc.savePrivateKey2(context, preferenceManager.getString(Constants.KEY_PHONE), newPass, privateKey, publicKey);
+
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            viewInterface.onChangePassError();
+                        }
+
                         viewInterface.onChangePassSuccess();
                     }
                 });

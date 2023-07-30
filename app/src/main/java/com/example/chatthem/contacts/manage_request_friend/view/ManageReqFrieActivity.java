@@ -33,6 +33,8 @@ public class ManageReqFrieActivity extends AppCompatActivity {
         PagerAdapter pagerAdapter = new PagerAdapter(this);
         binding.viewPager.setAdapter(pagerAdapter);
         tabLayoutMediator.attach();
+
+        binding.imageBack.setOnClickListener(v -> onBackPressed());
     }
 
 

@@ -75,7 +75,7 @@
         android:layout_marginTop="@dimen/_10sdp"
         android:layout_marginEnd="@dimen/_10sdp"
         android:background="@drawable/background_chat_input"
-        android:backgroundTint="@color/colorAccent"
+        android:backgroundTint="@color/md_theme_dark_onSecondaryContainer"
         android:fontFamily="@font/montserrat_semibold"
         android:paddingStart="@dimen/_20sdp"
         android:paddingTop="@dimen/_10sdp"
@@ -87,9 +87,11 @@
         android:textSize="@dimen/_18sdp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/titleName" />
+        app:layout_constraintTop_toBottomOf="@+id/titleName"
+        />
 
     <Button
+        android:id="@+id/change"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -102,5 +104,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textName" />
+        app:layout_constraintTop_toBottomOf="@+id/textName"
+        android:enabled="false"/>
 </androidx.constraintlayout.widget.ConstraintLayout>

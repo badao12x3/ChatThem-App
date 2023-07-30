@@ -4,8 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/bg_main"
-    tools:context=".chats.create_new_group_chat.view.CreateGroupChatActivity">
+    tools:context=".chats.create_new_group_chat.view.CreateGroupChatActivity"
+    android:background="@color/bg_main">
     <androidx.appcompat.widget.AppCompatImageView
         android:id="@+id/imageBack"
         android:layout_width="@dimen/_30sdp"
@@ -423,4 +423,5 @@
             android:visibility="gone" />
 
 
-    </FrameLayout></androidx.constraintlayout.widget.ConstraintLayout>
+    </FrameLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

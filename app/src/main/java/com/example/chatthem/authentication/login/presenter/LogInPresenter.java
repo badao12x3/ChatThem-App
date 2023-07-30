@@ -163,7 +163,8 @@ public class LogInPresenter {
                                      NoSuchProviderException | InvalidKeyException |
                                      UnrecoverableKeyException e) {
                                 e.printStackTrace();
-                                Toast.makeText(context, "Không thể lấy được private Key", Toast.LENGTH_SHORT).show();
+                                preferenceManager.clear();
+                                viewInterface.onGetPrivateKeyError();
                             }
                         }
                     });

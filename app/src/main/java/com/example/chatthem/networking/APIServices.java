@@ -9,6 +9,7 @@ import com.example.chatthem.chats.chat.model.FindChatResponse;
 import com.example.chatthem.chats.chat.model.ListMessagesResponse;
 import com.example.chatthem.chats.chat.model.SendResponse;
 import com.example.chatthem.chats.create_new_group_chat.model.SearchUserResponse;
+import com.example.chatthem.chats.group_chat_info.model.GetMemberRes;
 import com.example.chatthem.chats.model.ListChatResponse;
 import com.example.chatthem.chats.private_chat_info.model.StatusFriendRes;
 import com.example.chatthem.contacts.manage_request_friend.model.ListReqRes;
@@ -89,6 +90,12 @@ public interface APIServices {
             @Header("Authorization") String token,
             @Query("userId1") String userId1,
             @Query("userId2") String userId2
+    );
+    @Headers({ "Content-Type: application/json;charset=UTF-8"})
+    @GET("chats/getMember")
+    Observable<GetMemberRes> getMember(
+            @Header("Authorization") String token,
+            @Query("chatId") String chatId
     );
 
     @FormUrlEncoded

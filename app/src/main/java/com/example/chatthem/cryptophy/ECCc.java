@@ -99,9 +99,9 @@ public class ECCc {
     public static void savePrivateKey2(Context context, String email, String password, PrivateKey privateKey, PublicKey publicKey) throws CertificateException, KeyStoreException, IOException, NoSuchAlgorithmException, SignatureException, NoSuchProviderException, InvalidKeyException {
         // Tạo một khóa bí mật mới
 //        KeyPair keyPair =generateECKeys();
-        System.out.println("keypair");
-        System.out.println(privateKey);
-        System.out.println(publicKey);
+//        System.out.println("keypair");
+//        System.out.println(privateKey);
+//        System.out.println(publicKey);
 
 
         // Tạo một certificate tự ký
@@ -142,6 +142,22 @@ public class ECCc {
         }
     }
 
+    public static boolean deletePrivateKeyFromKeyStore(Context context, String alias)  {
+        // Load the KeyStore
+        KeyStore keyStore = null;
+        try {
+            keyStore = loadKeyStore(context);
+            // Delete the old private key from the keystore
+            keyStore.deleteEntry(alias);
+            return true;
+        } catch (KeyStoreException | InvalidKeyException | NoSuchProviderException |
+                 SignatureException | NoSuchAlgorithmException | CertificateException |
+                 IOException e) {
+            e.printStackTrace();
+            return false;
+        }
+
+    }
 
     public static PrivateKey getPrivateKeyFromKeyStore(Context context, String alias, String keyPassword) throws CertificateException, KeyStoreException, IOException, NoSuchAlgorithmException, SignatureException, NoSuchProviderException, InvalidKeyException, UnrecoverableKeyException {
         // Load the KeyStore

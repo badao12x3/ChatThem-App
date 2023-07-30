@@ -211,6 +211,14 @@ public class LoginFragment extends Fragment implements LogInContract.ViewInterfa
     }
 
     @Override
+    public void onGetPrivateKeyError() {
+        binding.login.setVisibility(View.VISIBLE);
+        binding.loading.setVisibility(View.GONE);
+        Toast.makeText(requireContext(), "Không thể lấy được private Key", Toast.LENGTH_SHORT).show();
+
+    }
+
+    @Override
     public void onLoginSuccess() {
         binding.login.setVisibility(View.VISIBLE);
         binding.loading.setVisibility(View.GONE);

@@ -31,7 +31,7 @@ public class ChangePasswordActivity extends AppCompatActivity implements ChangeP
         Helpers.setupUI(binding.getRoot(),this);
 
         preferenceManager = new PreferenceManager(getApplicationContext());
-        changePassPresenter = new ChangePassPresenter(this, preferenceManager);
+        changePassPresenter = new ChangePassPresenter(this, preferenceManager, getApplicationContext());
 
         getCurrPass();
         setListener();
@@ -124,7 +124,7 @@ public class ChangePasswordActivity extends AppCompatActivity implements ChangeP
             binding.inputCurrentPass.setHintTextColor(colorEror);
             showToast("Mật khẩu hiện tại không chính xác");
             return false;
-        }else if(binding.inputNewPassword.getText().toString().length() < 7){
+        }else if(binding.inputNewPassword.getText().toString().length() < 6){
             binding.inputNewPassword.setBackgroundResource(R.drawable.background_input_wrong);
             binding.inputNewPassword.setHintTextColor(colorEror);
             binding.inputConfirmPassword.setBackgroundResource(R.drawable.background_input_wrong);

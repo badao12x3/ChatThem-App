@@ -17,6 +17,9 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
         <activity
+            android:name=".chats.group_chat_info.view.AddMemActivity"
+            android:exported="false" />
+        <activity
             android:name=".chats.private_chat_info.view.FriendStatusActivity"
             android:exported="false" />
         <activity

@@ -76,7 +76,7 @@ public class ChatActivity extends AppCompatActivity implements ChatContract.View
         chat = (Chat) getIntent().getSerializableExtra(Constants.KEY_COLLECTION_CHAT);
         userModel = (UserModel) getIntent().getSerializableExtra(Constants.KEY_USER);
         if (chat != null){
-            chatPresenter.joinChat(preferenceManager.getString(Constants.KEY_USED_ID),preferenceManager.getString(Constants.KEY_NAME),preferenceManager.getString(Constants.KEY_AVATAR), chat.getId(), chat.getType(), preferenceManager.getString(Constants.KEY_PUBLIC_KEY));
+//            chatPresenter.joinChat(preferenceManager.getString(Constants.KEY_USED_ID),preferenceManager.getString(Constants.KEY_NAME),preferenceManager.getString(Constants.KEY_AVATAR), chat.getId(), chat.getType(), preferenceManager.getString(Constants.KEY_PUBLIC_KEY));
             binding.textName.setText(chat.getName());
             binding.imageInfo.setImageBitmap(Helpers.getBitmapFromEncodedString(chat.getAvatar()));
             binding.textOnline.setText(Objects.equals(chat.getOnline(), "1") ? "Đang hoạt động": "Ngoại tuyến");
@@ -254,7 +254,7 @@ public class ChatActivity extends AppCompatActivity implements ChatContract.View
     @Override
     public void onFindChatSucces() {
         chatNoLastMessObj = chatPresenter.getChatNoLastMessObj();
-        chatPresenter.joinChat(preferenceManager.getString(Constants.KEY_USED_ID),preferenceManager.getString(Constants.KEY_NAME),preferenceManager.getString(Constants.KEY_AVATAR), chatNoLastMessObj.getId(), chatNoLastMessObj.getType(), preferenceManager.getString(Constants.KEY_PUBLIC_KEY));
+//        chatPresenter.joinChat(preferenceManager.getString(Constants.KEY_USED_ID),preferenceManager.getString(Constants.KEY_NAME),preferenceManager.getString(Constants.KEY_AVATAR), chatNoLastMessObj.getId(), chatNoLastMessObj.getType(), preferenceManager.getString(Constants.KEY_PUBLIC_KEY));
         chatPresenter.getMessages(chatNoLastMessObj.getId());
     }
     @Override
@@ -312,6 +312,7 @@ public class ChatActivity extends AppCompatActivity implements ChatContract.View
         chatNoLastMessObj = chatPresenter.getChatNoLastMessObj();
         chatPresenter.getMessages(chatNoLastMessObj.getId());
         chatPresenter.joinChat(preferenceManager.getString(Constants.KEY_USED_ID),preferenceManager.getString(Constants.KEY_NAME),preferenceManager.getString(Constants.KEY_AVATAR), chatNoLastMessObj.getId(), chatNoLastMessObj.getType(), preferenceManager.getString(Constants.KEY_PUBLIC_KEY));
+        chatPresenter.createChat(chatNoLastMessObj.getId(),chatNoLastMessObj.getType());
         chatPresenter.sendRealtime(content,typeMess, chatNoLastMessObj.getId());
 
     }
@@ -336,9 +337,9 @@ public class ChatActivity extends AppCompatActivity implements ChatContract.View
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if(chat!= null){
-            chatPresenter.leaveChat(preferenceManager.getString(Constants.KEY_NAME),chat.getId());
-        }else if ( chatNoLastMessObj != null)
-            chatPresenter.leaveChat(preferenceManager.getString(Constants.KEY_NAME),chatNoLastMessObj.getId());
+//        if(chat!= null){
+//            chatPresenter.leaveChat(preferenceManager.getString(Constants.KEY_NAME),chat.getId());
+//        }else if ( chatNoLastMessObj != null)
+//            chatPresenter.leaveChat(preferenceManager.getString(Constants.KEY_NAME),chatNoLastMessObj.getId());
     }
 }

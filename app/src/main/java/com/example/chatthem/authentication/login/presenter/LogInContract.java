@@ -9,5 +9,7 @@ public class LogInContract {
         void onLoginError();
         void onLoginSuccess();
         void onLoginFail();
+
+        void onGetPrivateKeyError();
     }
 }
