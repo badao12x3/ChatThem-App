@@ -23,6 +23,7 @@ public class Constants {
     public static final String KEY_USED_ID = "userId";
     public static final String KEY_AVATAR = "avatar";
     public static final String KEY_COVERIMAGE = "coverImage";
+    public static final String KEY_COVERIMAGE_DEFAULT = "coverImage";
     public static final String KEY_GENDER = "gender";
     public static final String KEY_BIRTHDAY = "birthday";
     public static final String KEY_FCM_TOKEN = "fcmToken";
@@ -75,7 +76,7 @@ public class Constants {
             remotoMsgHeaders = new HashMap<>();
             remotoMsgHeaders.put(
                     REMOTE_MSG_AUTHORIZATION,
-                    "key=AAAANdlZ-WY:APA91bFJJ0vstI2-8E-OQeelSbg45jjWBrUT4vyVeGCb1-nEaqjqMuCspO0rBPL-e5EmbS9gD0ybmXfFyr4VUb6lnPgz0b1LcMYDZMF68D8KTaL4jDrIkLaNlayJ7Pj0oOYUAJIc7N1m"
+                    "key=AAAA8b1Nfcw:APA91bGpmhEG-f5QAEVArQGsXLRhTA-oPurgmE7mUFOj2nnlZDbY23SpKnQByqLRRUhGfCPT6qOv2JtbtVGbTom3eWmZ7jQDFfNdAfleQxB8Libb9O_dL1UXItm10gZomOo2EbbXH47x"
             );
             remotoMsgHeaders.put(
                     REMOTE_MSG_CONTENT_TYPE,

@@ -3,9 +3,6 @@ package com.example.chatthem.chats.chat.presenter;
 import android.util.Log;
 import android.widget.Toast;
 
-import androidx.annotation.MainThread;
-
-import com.example.chatthem.authentication.model.LoginResponse;
 import com.example.chatthem.chats.chat.model.ChatNoLastMessObj;
 import com.example.chatthem.chats.chat.model.FindChatResponse;
 import com.example.chatthem.chats.chat.model.ListMessagesResponse;
@@ -18,12 +15,12 @@ import com.example.chatthem.utilities.Constants;
 import com.example.chatthem.utilities.PreferenceManager;
 import com.google.gson.Gson;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -34,7 +31,10 @@ import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 import io.socket.client.Socket;
 import io.socket.emitter.Emitter;
+import retrofit2.Call;
+import retrofit2.Callback;
 import retrofit2.HttpException;
+import retrofit2.Response;
 
 public class ChatPresenter {
 
@@ -78,20 +78,20 @@ public class ChatPresenter {
             // Xử lý trường hợp Socket.IO object là null
         }
     }
-    public void createChat(String chatId, String typeRoom){
+    public void createChat(List<String> userIdList){
         // Gửi emit
+        JSONArray userIdArray = new JSONArray(userIdList);
         JSONObject data = new JSONObject();
         try {
-            data.put("room", chatId);
-            data.put("typeRoom", typeRoom);
+            data.put("userIds", userIdArray);
         } catch (JSONException e) {
             e.printStackTrace();
         }
+        // Gửi JSON Array qua socket
         if (socket != null) {
             socket.emit("createRoom", data);
-        } else {
-            // Xử lý trường hợp Socket.IO object là null
         }
+
     }
     public void registerOnMessageEvent(){
         // Đăng ký lắng nghe sự kiện
@@ -242,7 +242,7 @@ public class ChatPresenter {
                 });
     }
 
-    public void createAndSendPrivate(String receiveId, String content,String typeChat, String typeMess) {
+    public void createAndSendPrivate(String receiveId, String content,String typeChat, String typeMess, int pos) {
         APIServices.apiServices.createPriAndsend(token,receiveId,content,typeChat,typeMess)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -261,17 +261,17 @@ public class ChatPresenter {
                     public void onError(@NonNull Throwable e) {
                         e.printStackTrace();
 
-                        viewInterface.onSendError();
+                        viewInterface.onSendError(pos);
                     }
 
                     @Override
                     public void onComplete() {
-                        viewInterface.onCreateAndSendSuccess(content, typeMess);
+                        viewInterface.onCreateAndSendSuccess(content, typeMess, pos);
                     }
                 });
     }
 
-    public void send(String receiveId, String content,String typeChat, String typeMess) {
+    public void send(String receiveId, String content,String typeChat, String typeMess, int pos) {
         APIServices.apiServices.send(token,receiveId,content,typeChat,typeMess)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -289,18 +289,18 @@ public class ChatPresenter {
                     @Override
                     public void onError(@NonNull Throwable e) {
                         e.printStackTrace();
-                        viewInterface.onSendError();
+                        viewInterface.onSendError(pos);
                     }
 
                     @Override
                     public void onComplete() {
-                        viewInterface.onSendSuccess(content, typeMess);
+                        viewInterface.onSendSuccess(content, typeMess, pos);
 
                     }
                 });
 
     }
-    public void createAndSendGroup(List<String> member, String name,String content, String typeChat, String typeMess) {
+    public void createAndSendGroup(List<String> member, String name,String content, String typeChat, String typeMess, int pos) {
         APIServices.apiServices.createGroupAndsend(token,member,name,content,typeChat, typeMess)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -319,12 +319,12 @@ public class ChatPresenter {
                     public void onError(@NonNull Throwable e) {
                         e.printStackTrace();
 
-                        viewInterface.onSendError();
+                        viewInterface.onSendError(pos);
                     }
 
                     @Override
                     public void onComplete() {
-                        viewInterface.onCreateAndSendSuccess(content, typeMess);
+                        viewInterface.onCreateAndSendSuccess(content, typeMess, pos);
 
                     }
                 });
@@ -346,4 +346,43 @@ public class ChatPresenter {
             // Xử lý trường hợp Socket.IO object là null
         }
     }
+    public void sendNotification(String messageBody){
+        APIServices.apiServices.sendMessage(
+                Constants.getRemoteMsgHeaders(),
+                messageBody
+        ).enqueue(new Callback<String>() {
+            @Override
+            public void onResponse(@androidx.annotation.NonNull Call<String> call, @androidx.annotation.NonNull Response<String> response) {
+                if(response.isSuccessful()){
+                    try{
+                        if(response.body() != null){
+                            JSONObject responseJson = new JSONObject(response.body());
+                            JSONArray results = responseJson.getJSONArray("results");
+                            if(responseJson.getInt("failure") == 1){
+                                JSONObject error = (JSONObject) results.get(0);
+                                viewInterface.showToast(error.getString("error"));
+                                return;
+                            }
+                        }
+                    }catch (JSONException e){
+                        e.printStackTrace();
+                    }
+                    viewInterface.showToast("Notification sent successfully");
+                }else {
+                    viewInterface.showToast("Error" + response.code());
+                    Log.d("demo", ""+ response.code());
+                }
+            }
+
+            @Override
+            public void onFailure(@androidx.annotation.NonNull Call<String> call, @androidx.annotation.NonNull Throwable t) {
+
+                viewInterface.showToast(t.getMessage());
+            }
+        });
+
+    }
+
+
+
 }

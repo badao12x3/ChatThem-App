@@ -22,7 +22,24 @@ public class ChatNoLastMessObj implements Serializable {
     private String receivedID;
     private String avatar;
     private String online;
+    private String publicKey;
+    private List<String> fcm;
 
+    public List<String> getFcm() {
+        return fcm;
+    }
+
+    public void setFcm(List<String> fcm) {
+        this.fcm = fcm;
+    }
+
+    public String getPublicKey() {
+        return publicKey;
+    }
+
+    public void setPublicKey(String publicKey) {
+        this.publicKey = publicKey;
+    }
 
     public String getId() {
         return id;

@@ -4,7 +4,10 @@ public class ContactsContract {
     interface PresenterInterface {
         // Interface này dành cho SignUpPresenter
     }
-    interface ViewInterface {
-        // Interface này dành cho SignUpActivity
+    public interface ViewInterface {
+
+        void onSearchUserError();
+
+        void onSearchUserSuccess();
     }
 }

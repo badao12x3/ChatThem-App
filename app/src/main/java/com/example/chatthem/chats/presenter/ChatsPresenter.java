@@ -90,22 +90,10 @@ public class ChatsPresenter {
     public void registerOnCreateRoomEvent(){
         // Đăng ký lắng nghe sự kiện
         if (socket != null) {
-            socket.on("createRoom", new Emitter.Listener() {
+            socket.on("addRoom", new Emitter.Listener() {
                 @Override
                 public void call(Object... args) {
-                    // Xử lý dữ liệu nhận được từ sự kiện
-                    if (args.length > 0) {
-                        JSONObject receivedData = (JSONObject) args[0];
-                        try {
-                            String room = receivedData.getString("room");
-                            String typeRoom = receivedData.getString("typeRoom");
-                            // Xử lý message nhận được từ sự kiện
-                            viewInterface.onNewChatCreate();
-                            joinChat(preferenceManager.getString(Constants.KEY_USED_ID),preferenceManager.getString(Constants.KEY_NAME),preferenceManager.getString(Constants.KEY_AVATAR), room, typeRoom, preferenceManager.getString(Constants.KEY_PUBLIC_KEY));
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                    }
+                    viewInterface.onNewChatCreate();
                 }
             });
         } else {

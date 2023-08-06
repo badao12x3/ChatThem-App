@@ -13,6 +13,7 @@ import android.widget.EditText;
 import com.example.chatthem.chats.model.UserModel;
 
 import java.io.ByteArrayOutputStream;
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
@@ -33,6 +34,19 @@ public class Helpers {
     public static String encodeImage(Bitmap bitmap){
         int previewWidth = 150;
         int previewHeight = bitmap.getHeight()*previewWidth/bitmap.getWidth();
+        Bitmap previewBitmap = Bitmap.createScaledBitmap(bitmap, previewWidth, previewHeight, false);
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        previewBitmap.compress(Bitmap.CompressFormat.JPEG, 50, byteArrayOutputStream);
+        byte[] bytes = byteArrayOutputStream.toByteArray();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            return Base64.getEncoder().encodeToString(bytes);
+        }else{
+            return null;
+        }
+    }
+    public static String encodeSentImage(Bitmap bitmap){
+        int previewWidth = bitmap.getWidth();
+        int previewHeight = bitmap.getHeight();
         Bitmap previewBitmap = Bitmap.createScaledBitmap(bitmap, previewWidth, previewHeight, false);
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         previewBitmap.compress(Bitmap.CompressFormat.JPEG, 50, byteArrayOutputStream);
@@ -104,7 +118,7 @@ public class Helpers {
 
     public static String formatTime(String time, boolean inChat){
         // Định nghĩa định dạng của đầu vào (UTC)
-        SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+        SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
         inputFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
 
         // Định nghĩa định dạng của đầu ra (giờ địa phương)
@@ -147,7 +161,7 @@ public class Helpers {
 
             } catch (Exception e) {
                 e.printStackTrace();
-                return time.toString();
+                return time;
             }
 //        }
 
@@ -156,7 +170,7 @@ public class Helpers {
     public static List<UserModel> checkStringContain(String searchStr, List<UserModel> userModelList){
         List<UserModel> result = new ArrayList<>();
         for (UserModel u : userModelList){
-            if (u.getUsername().contains(searchStr)){
+            if (u.getUsername().toLowerCase().contains(searchStr.toLowerCase())){
                 result.add(u);
             }else if (u.getPhonenumber().contains(searchStr)){
                 result.add(u);
@@ -180,5 +194,13 @@ public class Helpers {
 //        }
 //
 //        return containsAllChars;
+    }
+
+    public static String getNow() {
+        Date date = new Date();
+        SimpleDateFormat outputFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
+        outputFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
+
+        return outputFormat.format(date);
     }
 }

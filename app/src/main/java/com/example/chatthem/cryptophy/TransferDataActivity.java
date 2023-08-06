@@ -8,6 +8,8 @@ import android.os.Bundle;
 import android.widget.Toast;
 
 import com.example.chatthem.MainActivity;
+import com.example.chatthem.authentication.LoginActivity;
+import com.example.chatthem.contacts.send_request.view.QRScanFriendActivity;
 import com.example.chatthem.databinding.ActivityTransferDataBinding;
 import com.example.chatthem.utilities.Constants;
 import com.example.chatthem.utilities.PreferenceManager;
@@ -33,12 +35,20 @@ public class TransferDataActivity extends AppCompatActivity {
         preferenceManager = new PreferenceManager(getApplicationContext());
         binding.scanBtn.setOnClickListener(v -> {
             ScanOptions options = new ScanOptions();
-            options.setPrompt("Scan a QR Code");
+            options.setPrompt("Hướng camera về phía mã QR");
             options.setCameraId(0);  // Use a specific camera of the device
             options.setBeepEnabled(true);
-            options.setOrientationLocked(false);
+            options.setOrientationLocked(true);
+            options.setCaptureActivity(QRScanFriendActivity.class);
             barcodeLauncher.launch(options);
 
+        });
+
+        binding.btnSignout.setOnClickListener(v -> {
+            Toast.makeText(this, "Đang đăng xuất", Toast.LENGTH_SHORT).show();
+            preferenceManager.clear();
+            startActivity(new Intent(getApplicationContext(), LoginActivity.class));
+            finish();
         });
     }
     private final ActivityResultLauncher<ScanOptions> barcodeLauncher = registerForActivityResult(new ScanContract(),
@@ -75,8 +85,6 @@ public class TransferDataActivity extends AppCompatActivity {
                             finish();
 
                         }
-
-
 
                     } catch (Exception e) {
                         e.printStackTrace();

@@ -1,10 +1,25 @@
 package com.example.chatthem.contacts.send_request.presenter;
 
 public class ProfileScanUserContract {
-    interface PresenterInterface {
-        // Interface này dành cho SignUpPresenter
+    public interface PresenterInterface {
+
+
     }
-    interface ViewInterface {
-        // Interface này dành cho SignUpActivity
+    public interface ViewInterface {
+        void getStatusFriendSuccess();
+
+        void getStatusFriendFail();
+
+        void setReqFriendSuccess();
+
+        void setReqFriendFail();
+
+        void setAcceptSuccess(String status);
+
+        void setAcceptFail();
+
+        void delReqFail();
+
+        void delReqSuccess();
     }
 }

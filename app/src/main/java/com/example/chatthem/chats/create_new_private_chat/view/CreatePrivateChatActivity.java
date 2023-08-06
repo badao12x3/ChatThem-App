@@ -2,6 +2,7 @@ package com.example.chatthem.chats.create_new_private_chat.view;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -100,6 +101,13 @@ public class CreatePrivateChatActivity extends AppCompatActivity implements Crea
                 return false;
             }
         });
+        binding.swipeLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                // Xử lý logic khi làm mới dữ liệu, ví dụ tải dữ liệu mới
+                createChatPrivatePresenter.getListFriend(null);
+            }
+        });
     }
 
     @Override
@@ -122,6 +130,8 @@ public class CreatePrivateChatActivity extends AppCompatActivity implements Crea
 
     @Override
     public void onSearchUserSuccess() {
+        binding.swipeLayout.setRefreshing(false);
+
         List<UserModel> list = createChatPrivatePresenter.getUserModelList();
         binding.shimmerEffect.stopShimmerAnimation();
         binding.shimmerEffect.setVisibility(View.GONE);
@@ -138,6 +148,7 @@ public class CreatePrivateChatActivity extends AppCompatActivity implements Crea
     public void onGetListFriendError() {
         binding.shimmerEffect.stopShimmerAnimation();
         binding.shimmerEffect.setVisibility(View.GONE);
+        binding.swipeLayout.setRefreshing(false);
         binding.textErrorMessage.setVisibility(View.VISIBLE);
         binding.textErrorMessage.setText("Tải danh sách bạn bè gặp lỗi");
         int colorEror = ContextCompat.getColor(getApplicationContext(), R.color.md_theme_light_error);
@@ -146,11 +157,11 @@ public class CreatePrivateChatActivity extends AppCompatActivity implements Crea
 
     @Override
     public void onGetListFriendSuccess() {
-        List<UserModel> list = createChatPrivatePresenter.getUserModelList();
+        userModelList = createChatPrivatePresenter.getUserModelList();
         binding.shimmerEffect.stopShimmerAnimation();
         binding.shimmerEffect.setVisibility(View.GONE);
-        if (list.size() != 0){
-            adapter.reset(list);
+        if (userModelList.size() != 0){
+            adapter.reset(userModelList);
             binding.usersRecyclerView.setVisibility(View.VISIBLE);
         }else {
             binding.textErrorMessage.setVisibility(View.VISIBLE);

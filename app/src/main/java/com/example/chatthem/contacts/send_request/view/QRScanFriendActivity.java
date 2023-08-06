@@ -5,12 +5,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 
 import com.example.chatthem.R;
+import com.journeyapps.barcodescanner.CaptureActivity;
 
-public class QRScanFriendActivity extends AppCompatActivity {
+public class QRScanFriendActivity extends CaptureActivity {
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_qrscan_friend);
-    }
 }

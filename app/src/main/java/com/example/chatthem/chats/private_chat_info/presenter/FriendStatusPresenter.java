@@ -47,7 +47,7 @@ public class FriendStatusPresenter {
     }
 
     public void getStatusFriend(String receiver){
-        APIServices.apiServices.getStatusFriend(token, receiver)
+        APIServices.apiServices.getStatusFriend("Bearer "  + token, receiver)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Observer<StatusFriendRes>() {

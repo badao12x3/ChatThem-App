@@ -14,6 +14,7 @@ import com.example.chatthem.chats.model.ListChatResponse;
 import com.example.chatthem.chats.private_chat_info.model.StatusFriendRes;
 import com.example.chatthem.contacts.manage_request_friend.model.ListReqRes;
 import com.example.chatthem.contacts.model.ListFriendResponse;
+import com.example.chatthem.contacts.send_request.model.SetReqFriendRes;
 import com.example.chatthem.profile.model.ChangePassResponse;
 import com.example.chatthem.profile.model.EditProfileResponse;
 import com.example.chatthem.utilities.Constants;
@@ -21,12 +22,14 @@ import com.google.gson.Gson;
 
 import org.json.JSONObject;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import io.reactivex.rxjava3.core.Observable;
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
+import retrofit2.Call;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava3.RxJava3CallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
@@ -35,6 +38,7 @@ import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
 import retrofit2.http.Header;
+import retrofit2.http.HeaderMap;
 import retrofit2.http.Headers;
 import retrofit2.http.POST;
 import retrofit2.http.Path;
@@ -57,6 +61,12 @@ public interface APIServices {
             .client(okBuilder.build())
             .build()
             .create(APIServices.class);
+
+    @POST("send")
+    Call<String> sendMessage(
+            @HeaderMap HashMap<String, String> headers,
+            @Body String messageBody
+    );
     @FormUrlEncoded
     @POST("users/login")
     Observable<LoginResponse> login(
@@ -226,20 +236,20 @@ public interface APIServices {
     );
     @FormUrlEncoded
     @POST("friends/delete-request")
-    Observable<ChangePassResponse> delRequest(
+    Observable<SetReqFriendRes> delRequest(
             @Header("Authorization") String token,
             @Field("receiver") String receiver
     );
 
     @FormUrlEncoded
     @POST("friends/set-requested-friend")
-    Observable<ChangePassResponse> setRequestFriend(
+    Observable<SetReqFriendRes> setRequestFriend(
             @Header("Authorization") String token,
             @Field("user_id") String user_id
     );
     @FormUrlEncoded
     @POST("friends/set-accept")
-    Observable<ChangePassResponse> setAccept(
+    Observable<SetReqFriendRes> setAccept(
             @Header("Authorization") String token,
             @Field("user_id") String user_id,
             @Field("is_accept") String is_accept
@@ -258,6 +268,10 @@ public interface APIServices {
             @Field("keyword") String keyword
     );
 
-
-
+    @FormUrlEncoded
+    @POST("users/edit")
+    Observable<EditProfileResponse> updateFCMToken(
+            @Header("Authorization") String token,
+            @Field("fcm") String fcmToken
+    );
 }

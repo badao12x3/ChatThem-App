@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "1038263090636",
+    "project_id": "chatthem-ef586",
+    "storage_bucket": "chatthem-ef586.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1038263090636:android:ec2f90d3a051e4dc2fb169",
+        "android_client_info": {
+          "package_name": "com.example.chatthem"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1038263090636-2dvm54rgld9kgkv6aarskrf8j3f8giv4.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB9U481bXD4ADQ-CkeogLRwzDwzVqvF3K0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1038263090636-2dvm54rgld9kgkv6aarskrf8j3f8giv4.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

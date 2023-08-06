@@ -21,7 +21,16 @@ public class Chat implements Serializable {
     private String receivedId;
     private String avatar;
     private String online;
+    private String publicKey;
 
+
+    public String getPublicKey() {
+        return publicKey;
+    }
+
+    public void setPublicKey(String publicKey) {
+        this.publicKey = publicKey;
+    }
 
     public String getId() {
         return id;

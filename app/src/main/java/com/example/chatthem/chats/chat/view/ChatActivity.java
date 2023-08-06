@@ -6,6 +6,8 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -23,15 +25,25 @@ import com.example.chatthem.chats.model.Chat;
 import com.example.chatthem.chats.model.Message;
 import com.example.chatthem.chats.model.UserModel;
 import com.example.chatthem.chats.private_chat_info.view.PrivateChatInfoActivity;
+import com.example.chatthem.cryptophy.ECCc;
 import com.example.chatthem.databinding.ActivityChatBinding;
 import com.example.chatthem.utilities.Constants;
 import com.example.chatthem.utilities.Helpers;
 import com.example.chatthem.utilities.PreferenceManager;
 import com.github.dhaval2404.imagepicker.ImagePicker;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import java.io.FileNotFoundException;
+import java.io.InputStream;
+import java.security.PrivateKey;
+import java.security.PublicKey;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+
+import javax.crypto.SecretKey;
 
 public class ChatActivity extends AppCompatActivity implements ChatContract.ViewInterface {
 
@@ -48,7 +60,8 @@ public class ChatActivity extends AppCompatActivity implements ChatContract.View
 
     private ArrayList<String> receivedList;
     private String group_name;
-
+    private SecretKey secretKey = null;
+    private String encodedImage;
 
 
     @Override
@@ -81,12 +94,18 @@ public class ChatActivity extends AppCompatActivity implements ChatContract.View
             binding.imageInfo.setImageBitmap(Helpers.getBitmapFromEncodedString(chat.getAvatar()));
             binding.textOnline.setText(Objects.equals(chat.getOnline(), "1") ? "Đang hoạt động": "Ngoại tuyến");
             binding.textOnline.setTextColor(Objects.equals(chat.getOnline(), "1") ? getResources().getColor(R.color.green): getResources().getColor(R.color.seed) );
+            if (chat.getPublicKey() != null){
+                getSharedKey(chat.getPublicKey());
+            }
             chatPresenter.getMessages(chat.getId());
+            chatAdapter = new ChatAdapter(messageList, preferenceManager.getString(Constants.KEY_USED_ID), chat.getType(), secretKey);
+
         }else if (userModel != null){
             binding.textName.setText(userModel.getUsername());
             binding.imageInfo.setImageBitmap(Helpers.getBitmapFromEncodedString(userModel.getAvatar()));
             binding.textOnline.setText(Objects.equals(userModel.getOnline(), "1") ? "Đang hoạt động": "Ngoại tuyến");
             binding.textOnline.setTextColor(Objects.equals(userModel.getOnline(), "1") ? getResources().getColor(R.color.green): getResources().getColor(R.color.seed) );
+            getSharedKey(userModel.getPublicKey());
             chatPresenter.findChat(userModel.getId());
         }else if (getIntent().getExtras()!=null){
             receivedList = getIntent().getExtras().getStringArrayList("create_group_chat");
@@ -97,11 +116,18 @@ public class ChatActivity extends AppCompatActivity implements ChatContract.View
             binding.shimmerEffect.stopShimmerAnimation();
             binding.shimmerEffect.setVisibility(View.GONE);
             binding.usersRecyclerView.setVisibility(View.VISIBLE);
-
+        }else if(getIntent().getStringExtra("ChatId")!=null){
+            binding.textName.setText(userModel.getUsername());
+            binding.imageInfo.setImageBitmap(Helpers.getBitmapFromEncodedString(userModel.getAvatar()));
+            binding.textOnline.setText(Objects.equals(userModel.getOnline(), "1") ? "Đang hoạt động": "Ngoại tuyến");
+            binding.textOnline.setTextColor(Objects.equals(userModel.getOnline(), "1") ? getResources().getColor(R.color.green): getResources().getColor(R.color.seed) );
+            chatPresenter.findChat(userModel.getId());
         }
 
-
     }
+
+
+
     private void setListener() {
         binding.imageBack.setOnClickListener(v->{
             onBackPressed();
@@ -165,20 +191,14 @@ public class ChatActivity extends AppCompatActivity implements ChatContract.View
             if (content.isEmpty()){
                 return;
             }
-            if (chat!=null){
-                chatPresenter.send(chat.getId(),content, chat.getType(),  Constants.KEY_TYPE_TEXT);
-            }else if (chatNoLastMessObj != null){
-                chatPresenter.send(chatNoLastMessObj.getId(),content, chatNoLastMessObj.getType(),  Constants.KEY_TYPE_TEXT);
-            }else if (userModel!=null){
-                chatPresenter.createAndSendPrivate(userModel.getId(),content, Constants.KEY_PRIVATE_CHAT, Constants.KEY_TYPE_TEXT);
-            }else if(receivedList != null){
-                chatPresenter.createAndSendGroup(receivedList, group_name, content, Constants.KEY_GROUP_CHAT, Constants.KEY_TYPE_TEXT);
-            }
+
+            send(content, Constants.KEY_TYPE_TEXT);
             binding.inputMessage.setText("");
         });
         binding.sendImgBtn.setOnClickListener(v->{
-
-
+            send(encodedImage, Constants.KEY_TYPE_IMAGE);
+            binding.containerText.setVisibility(View.VISIBLE);
+            binding.containerImg.setVisibility(View.GONE);
         });
         binding.exitImg.setOnClickListener(v->{
             binding.containerText.setVisibility(View.VISIBLE);
@@ -214,6 +234,33 @@ public class ChatActivity extends AppCompatActivity implements ChatContract.View
         });
     }
 
+    private void send(String content, String type) {
+        if (chat!=null){
+            if (Objects.equals(chat.getType(), Constants.KEY_PRIVATE_CHAT)){
+                content = ECCc.encryptString(secretKey,content);
+            }
+            chatPresenter.send(chat.getId(),content, chat.getType(),  type, messageList.size());
+        }else if (chatNoLastMessObj != null){
+            if (Objects.equals(chatNoLastMessObj.getType(), Constants.KEY_PRIVATE_CHAT)){
+                content = ECCc.encryptString(secretKey,content);
+            }
+            chatPresenter.send(chatNoLastMessObj.getId(),content, chatNoLastMessObj.getType(),  type, messageList.size());
+        }else if (userModel != null){
+            content = ECCc.encryptString(secretKey, content);
+            chatPresenter.createAndSendPrivate(userModel.getId(),content, Constants.KEY_PRIVATE_CHAT, type, messageList.size());
+            chatAdapter = new ChatAdapter(messageList, preferenceManager.getString(Constants.KEY_USED_ID), Constants.KEY_PRIVATE_CHAT, secretKey);
+        }else if(receivedList != null){
+            chatPresenter.createAndSendGroup(receivedList, group_name, content, Constants.KEY_GROUP_CHAT, type, messageList.size());
+            chatAdapter = new ChatAdapter(messageList, preferenceManager.getString(Constants.KEY_USED_ID), Constants.KEY_GROUP_CHAT, secretKey);
+        }
+        UserModel userModel1 = new UserModel(preferenceManager.getString(Constants.KEY_USED_ID));
+        Message message = new Message(userModel1,content,type, Helpers.getNow() ,"1");
+        messageList.add(message);
+        chatAdapter.notifyItemRangeInserted(messageList.size(),messageList.size());
+        binding.usersRecyclerView.smoothScrollToPosition(messageList.size() - 1);
+
+    }
+
 
     private final ActivityResultLauncher<Intent> startForImageResult = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
             result -> {
@@ -225,23 +272,31 @@ public class ChatActivity extends AppCompatActivity implements ChatContract.View
                     binding.containerText.setVisibility(View.GONE);
                     binding.containerImg.setVisibility(View.VISIBLE);
 
-//                    try {
-//                        InputStream inputStream = getContentResolver().openInputStream(resultUri);
-//                        Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
-//                        encodedImage = encodeImage(bitmap);
-//
-//                    } catch (FileNotFoundException e) {
-//                        e.printStackTrace();
-//                    }
+                    try {
+                        InputStream inputStream = getContentResolver().openInputStream(resultUri);
+                        Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
+                        encodedImage = Helpers.encodeSentImage(bitmap);
+
+                    } catch (FileNotFoundException e) {
+                        e.printStackTrace();
+                    }
 
                 }else if (result.getResultCode() == ImagePicker.RESULT_ERROR){
                     Toast.makeText(getApplicationContext(), ImagePicker.getError(data), Toast.LENGTH_SHORT).show();
                 }else {
-                    Toast.makeText(getApplicationContext(), "Task Cancelled", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(), "Hủy chọn ảnh!", Toast.LENGTH_SHORT).show();
                 }
             });
 
-
+    private void getSharedKey(String publicKeyStr) {
+        try {
+            PublicKey publicKey = ECCc.stringToPublicKey(publicKeyStr);
+            PrivateKey privateKey = ECCc.stringToPrivateKey(preferenceManager.getString(Constants.KEY_PRIVATE_KEY));
+            secretKey = ECCc.generateSharedSecret(privateKey,publicKey);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
     @Override
     public void onChatNotExist() {
 //        chatAdapter = new ChatAdapter(messageList, preferenceManager.getString(Constants.KEY_USED_ID), "PRIVATE_CHAT");
@@ -253,25 +308,24 @@ public class ChatActivity extends AppCompatActivity implements ChatContract.View
 
     @Override
     public void onFindChatSucces() {
+        if (secretKey == null)
+
         chatNoLastMessObj = chatPresenter.getChatNoLastMessObj();
 //        chatPresenter.joinChat(preferenceManager.getString(Constants.KEY_USED_ID),preferenceManager.getString(Constants.KEY_NAME),preferenceManager.getString(Constants.KEY_AVATAR), chatNoLastMessObj.getId(), chatNoLastMessObj.getType(), preferenceManager.getString(Constants.KEY_PUBLIC_KEY));
         chatPresenter.getMessages(chatNoLastMessObj.getId());
+        chatAdapter = new ChatAdapter(messageList, preferenceManager.getString(Constants.KEY_USED_ID), chatNoLastMessObj.getType(), secretKey);
+
     }
     @Override
     public void onFindChatError() {
         Toast.makeText(getApplicationContext(),"Lỗi khi tìm đoạn chat", Toast.LENGTH_SHORT).show();
+        finish();
     }
     @Override
     public void onGetMessagesSuccess() {
 
         messageList = chatPresenter.getMessageList();
-        if (chat!=null){
-            chatAdapter = new ChatAdapter(messageList, preferenceManager.getString(Constants.KEY_USED_ID), chat.getType());
-        }
-        if (chatNoLastMessObj != null){
-            chatAdapter = new ChatAdapter(messageList, preferenceManager.getString(Constants.KEY_USED_ID), chatNoLastMessObj.getType());
-
-        }
+        chatAdapter.resetData(messageList);
         binding.shimmerEffect.stopShimmerAnimation();
         binding.shimmerEffect.setVisibility(View.GONE);
         binding.usersRecyclerView.setAdapter(chatAdapter);
@@ -295,32 +349,77 @@ public class ChatActivity extends AppCompatActivity implements ChatContract.View
 
 
     @Override
-    public void onSendError() {
+    public void onSendError(int pos) {
         Toast.makeText(getApplicationContext(),"Lỗi khi gửi tin nhắn", Toast.LENGTH_SHORT).show();
+        messageList.get(pos).setSending("0");
+        chatAdapter.notifyItemChanged(pos);
     }
 
     @Override
-    public void onSendSuccess(String content, String typeMess) {
+    public void onSendSuccess(String content, String typeMess, int pos) {
+
         chatNoLastMessObj = chatPresenter.getChatNoLastMessObj();
+
 //        chatPresenter.getMessages(chatNoLastMessObj.getId());
+        messageList.get(pos).setSending("2");
+        chatAdapter.notifyItemChanged(pos);
         chatPresenter.sendRealtime(content,typeMess, chatNoLastMessObj.getId());
+
+
+        sendNoti(content,typeMess, chatNoLastMessObj.getName(), chatNoLastMessObj.getType());
+
     }
+
 
     @Override
-    public void onCreateAndSendSuccess(String content, String typeMess) {
+    public void onCreateAndSendSuccess(String content, String typeMess, int pos) {
 
         chatNoLastMessObj = chatPresenter.getChatNoLastMessObj();
-        chatPresenter.getMessages(chatNoLastMessObj.getId());
-        chatPresenter.joinChat(preferenceManager.getString(Constants.KEY_USED_ID),preferenceManager.getString(Constants.KEY_NAME),preferenceManager.getString(Constants.KEY_AVATAR), chatNoLastMessObj.getId(), chatNoLastMessObj.getType(), preferenceManager.getString(Constants.KEY_PUBLIC_KEY));
-        chatPresenter.createChat(chatNoLastMessObj.getId(),chatNoLastMessObj.getType());
+        messageList.get(pos).setSending("2");
+        chatAdapter.notifyItemChanged(pos);
+
+        chatPresenter.joinChat(preferenceManager.getString(Constants.KEY_USED_ID),preferenceManager.getString(Constants.KEY_NAME),preferenceManager.getString(Constants.KEY_AVATAR), chatNoLastMessObj.getId(), chatNoLastMessObj.getType(), preferenceManager.getString(Constants.KEY_PUBLIC_KEY));        // Tạo danh sách userId ví dụ
+        List<String> userIdList = new ArrayList<>();
+        if (Objects.equals(chatNoLastMessObj.getType(), Constants.KEY_GROUP_CHAT)){
+            userIdList = receivedList;
+            userIdList.add(preferenceManager.getString(Constants.KEY_USED_ID));
+        }else{
+            userIdList.add(chatNoLastMessObj.getMember().get(0));
+            userIdList.add(preferenceManager.getString(Constants.KEY_USED_ID));
+        }
+        chatPresenter.createChat(userIdList);
         chatPresenter.sendRealtime(content,typeMess, chatNoLastMessObj.getId());
 
+        sendNoti(content,typeMess,chatNoLastMessObj.getName(),chatNoLastMessObj.getType());
     }
 
+    private void sendNoti(String content, String typeMess, String group_name, String type_chat){
+        try {
+            JSONArray tokens = new JSONArray(chatNoLastMessObj.getFcm());
+
+            JSONObject data = new JSONObject();
+            data.put("ChatId", chatNoLastMessObj.getId());
+            data.put(Constants.KEY_NAME, group_name);
+            data.put(Constants.KEY_SENDER_NAME, preferenceManager.getString(Constants.KEY_NAME));
+            data.put(Constants.KEY_FCM_TOKEN, preferenceManager.getString(Constants.KEY_FCM_TOKEN));
+            data.put(Constants.KEY_MESSAGE, content);
+            data.put(Constants.TYPE_MESSAGES_SEND, typeMess);
+            data.put(Constants.KEY_PUBLIC_KEY, preferenceManager.getString(Constants.KEY_PUBLIC_KEY));
+            data.put("TypeChat", type_chat);
+
+            JSONObject body = new JSONObject();
+            body.put(Constants.REMOTE_MSG_DATA,data);
+            body.put(Constants.REMOTE_MSG_REGISTRATION_IDS,tokens);
+
+            chatPresenter.sendNotification(body.toString());
+        }catch (Exception e){
+            showToast(e.getMessage());
+        }
+    }
     @Override
     public void receiveNewMsgRealtime(String userId,String username , String avatar,String room,String typeRoom,String publicKey,String text,String typeMess, String time) {
         UserModel userModel1 = new UserModel(userId, username, avatar, publicKey);
-        Message message = new Message(room,userModel1,text,typeMess,time);
+        Message message = new Message(room,userModel1,text,typeMess,time , "2");
         messageList.add(message);
         runOnUiThread(new Runnable() {
             @Override
@@ -332,6 +431,11 @@ public class ChatActivity extends AppCompatActivity implements ChatContract.View
         });
 //        chatAdapter.addData();
 
+    }
+
+    @Override
+    public void showToast(String msg) {
+        Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
     }
 
     @Override

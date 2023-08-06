@@ -1,6 +1,11 @@
 package com.example.chatthem;
 
+import static com.example.chatthem.firebase.MessagingService.channelId;
+
 import android.app.Application;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.os.Build;
 
 import com.example.chatthem.networking.SocketManager;
 
@@ -22,5 +27,18 @@ public class MyApp extends Application {
 
         // Khởi tạo Socket.IO object khi ứng dụng được chạy
         SocketManager.getInstance();
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            CharSequence channelName = "Chat Message";
+            String channelDescription = "This notification channel is used for chat message notifications";
+            int importance = NotificationManager.IMPORTANCE_HIGH;
+            NotificationChannel channel = new NotificationChannel(channelId, channelName, importance);
+            channel.setDescription(channelDescription);
+            NotificationManager notificationManager = getSystemService(NotificationManager.class);
+            notificationManager.createNotificationChannel(channel);
+            Security.removeProvider("BC");
+            Security.addProvider(new BouncyCastleProvider());
+
+        }
     }
 }

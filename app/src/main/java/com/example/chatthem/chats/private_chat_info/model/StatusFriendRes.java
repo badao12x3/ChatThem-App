@@ -4,6 +4,16 @@ import com.example.chatthem.chats.model.UserModel;
 
 public class StatusFriendRes {
     private String code, message, status;
+    private Boolean isSend;
+
+    public Boolean getSend() {
+        return isSend;
+    }
+
+    public void setSend(Boolean send) {
+        isSend = send;
+    }
+
     private UserModel me, you;
 
     public UserModel getMe() {

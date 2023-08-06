@@ -7,20 +7,33 @@ import android.os.Bundle;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.fragment.app.Fragment;
 
+import android.text.Editable;
+import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.util.DisplayMetrics;
+import android.util.Patterns;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.Toast;
 
+import com.example.chatthem.MainActivity;
+import com.example.chatthem.R;
 import com.example.chatthem.chats.create_new_private_chat.view.CreatePrivateChatActivity;
 import com.example.chatthem.contacts.manage_request_friend.view.ManageReqFrieActivity;
+import com.example.chatthem.contacts.presenter.ContactsContract;
+import com.example.chatthem.contacts.presenter.ContactsPresenter;
+import com.example.chatthem.contacts.send_request.view.ProfileScanUserActivity;
+import com.example.chatthem.contacts.send_request.view.QRScanFriendActivity;
 import com.example.chatthem.databinding.FragmentContactsBinding;
 import com.example.chatthem.utilities.Constants;
 import com.example.chatthem.utilities.Helpers;
 import com.example.chatthem.utilities.PreferenceManager;
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.WriterException;
+import com.google.zxing.integration.android.IntentIntegrator;
 import com.journeyapps.barcodescanner.BarcodeEncoder;
 import com.journeyapps.barcodescanner.ScanContract;
 import com.journeyapps.barcodescanner.ScanOptions;
@@ -30,10 +43,14 @@ import com.journeyapps.barcodescanner.ScanOptions;
  * Use the {@link ContactsFragment#} factory method to
  * create an instance of this fragment.
  */
-public class ContactsFragment extends Fragment {
+public class ContactsFragment extends Fragment implements ContactsContract.ViewInterface {
 
     private FragmentContactsBinding binding;
     private PreferenceManager preferenceManager;
+
+    private ContactsPresenter presenter;
+    private Animation fromBottomBgAnim;
+    private Animation toBottomBgAnim;
     private String STR ;
 
     @Override
@@ -43,11 +60,23 @@ public class ContactsFragment extends Fragment {
         View rootView = binding.getRoot();
         Helpers.setupUI(rootView, requireActivity());
         preferenceManager = new PreferenceManager(requireContext());
+        presenter = new ContactsPresenter(this, preferenceManager.getString(Constants.KEY_TOKEN));
+        if (fromBottomBgAnim == null){
+            fromBottomBgAnim = AnimationUtils.loadAnimation(requireContext(), R.anim.from_bottom_anim);
+        }
+        if (toBottomBgAnim == null){
+            toBottomBgAnim = AnimationUtils.loadAnimation(requireContext(), R.anim.to_bottom_anim);
+        }
+        init();
+        setListener();
+        return rootView;
+    }
 
+    private void init(){
         binding.username.setText(preferenceManager.getString(Constants.KEY_NAME));
 
         // Chuyển đổi dữ liệu thành định dạng JSON
-        STR = preferenceManager.getString(Constants.KEY_PHONE);
+        STR = preferenceManager.getString(Constants.KEY_USED_ID);
 
         try {
             // Tính toán kích thước ảnh QR dựa trên kích thước màn hình
@@ -58,13 +87,12 @@ public class ContactsFragment extends Fragment {
             binding.qrCode.setImageBitmap(bitmap);
         } catch (WriterException e) {
             e.printStackTrace();
-            Toast.makeText(requireContext(), "Fail when gen QR", Toast.LENGTH_SHORT).show();
+            Toast.makeText(requireContext(), "Thất bại khi tạo mã QR", Toast.LENGTH_SHORT).show();
         }
-        setListener();
-        return rootView;
+        binding.swipeLayout.setRefreshing(false);
     }
-
     private void setListener(){
+        binding.swipeLayout.setOnRefreshListener(this::init);
         binding.cardviewListFriend.setOnClickListener(v->{
             Intent it = new Intent(requireContext(), CreatePrivateChatActivity.class);
             it.putExtra("title", "Danh sách bạn bè");
@@ -72,15 +100,48 @@ public class ContactsFragment extends Fragment {
         });
         binding.btnScan.setOnClickListener(v->{
             ScanOptions options = new ScanOptions();
-            options.setPrompt("Scan a QR Code");
+            options.setPrompt("Hướng camera về phía mã QR");
             options.setCameraId(0);  // Use a specific camera of the device
             options.setBeepEnabled(true);
-            options.setOrientationLocked(false);
+            options.setOrientationLocked(true);
+            options.setCaptureActivity(QRScanFriendActivity.class);
             barcodeLauncher.launch(options);
+
         });
         binding.cardviewRequest.setOnClickListener(v->{
             Intent it = new Intent(requireContext(), ManageReqFrieActivity.class);
             startActivity(it);
+        });
+
+        binding.makeFriend.setOnClickListener(v -> {
+            String phonenumber = binding.editPhone.getText().toString().trim();
+            if (Patterns.PHONE.matcher(phonenumber).matches() && phonenumber.startsWith("0") && phonenumber.length() == 10){
+                if (phonenumber.equals(preferenceManager.getString(Constants.KEY_PHONE))){
+                    Toast.makeText(requireContext(), "Bạn không thể kết bạn chính mình", Toast.LENGTH_SHORT).show();
+                }else {
+                    binding.transparentBg.startAnimation(fromBottomBgAnim);
+                    binding.progressBar.setVisibility(View.VISIBLE);
+                    presenter.searchUser(phonenumber);
+                }
+            }else {
+                Toast.makeText(requireContext(), "Số điện thoại không đúng định dạng, hãy nhập lại", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        binding.editPhone.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                boolean hasText = !TextUtils.isEmpty(s);
+                binding.makeFriend.setEnabled(hasText);
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+            }
         });
     }
 
@@ -106,28 +167,15 @@ public class ContactsFragment extends Fragment {
                     // if the intentResult is not null we'll set
                     // the content and format of scan message
                     try {
-                        String phone = result.getContents();
-                        binding.searchView.setQueryHint(phone);
+                        String userId = result.getContents();
 
                         // Xử lý dữ liệu
-                        if (phone.equals(preferenceManager.getString(Constants.KEY_PHONE))){
+                        if (userId.equals(preferenceManager.getString(Constants.KEY_PHONE))){
                             Toast.makeText(requireContext(), "Bạn đang quét QR của chính bạn!", Toast.LENGTH_SHORT).show();
                         }else {
-//                            preferenceManager.putString(Constants.KEY_PRIVATE_KEY, privateKey);
-//
-//                            //save in new device
-//                            PrivateKey privateKeyObj = ECCc.stringToPrivateKey(preferenceManager.getString(Constants.KEY_PRIVATE_KEY));
-//                            PublicKey publicKeyObj = ECCc.stringToPublicKey(preferenceManager.getString(Constants.KEY_PUBLIC_KEY));
-//                            ECCc.savePrivateKey2(getApplicationContext(),
-//                                    preferenceManager.getString(Constants.KEY_EMAIL),
-//                                    preferenceManager.getString(Constants.KEY_PASSWORD),
-//                                    privateKeyObj, publicKeyObj
-//                            );
-//
-//                            Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-//                            startActivity(intent);
-//                            finish();
-
+                            Intent intent = new Intent(requireContext(), ProfileScanUserActivity.class);
+                            intent.putExtra("userId",userId);
+                            startActivity(intent);
                         }
 
 
@@ -138,4 +186,20 @@ public class ContactsFragment extends Fragment {
 
                 }
             });
+
+    @Override
+    public void onSearchUserError() {
+        binding.transparentBg.startAnimation(toBottomBgAnim);
+        binding.progressBar.setVisibility(View.GONE);
+        Toast.makeText(requireContext(), "Số điện thoại chưa đăng ký tài khoản, vui lòng thử số khác!", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onSearchUserSuccess() {
+        binding.transparentBg.startAnimation(toBottomBgAnim);
+        binding.progressBar.setVisibility(View.GONE);
+        Intent intent = new Intent(requireContext(), ProfileScanUserActivity.class);
+        intent.putExtra("userId",presenter.getUserModels().getId());
+        startActivity(intent);
+    }
 }

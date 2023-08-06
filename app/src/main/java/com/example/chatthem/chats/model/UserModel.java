@@ -42,7 +42,9 @@ public class UserModel implements Serializable {
         this.publicKey = publicKey;
     }
 
-
+    public UserModel(String id) {
+        this.id = id;
+    }
     public Boolean getChecked() {
         return checked;
     }

@@ -9,11 +9,13 @@ public class ChatContract {
 
         void onFindChatError();
 
-        void onSendError();
+        void onSendError(int pos);
 
-        void onSendSuccess(String content, String typeMess);
-        void onCreateAndSendSuccess(String content, String typeMess);
+        void onSendSuccess(String content, String typeMess, int pos);
+        void onCreateAndSendSuccess(String content, String typeMess, int pos);
 
         void receiveNewMsgRealtime(String userId,String username,String avatar,String room,String typeRoom,String publicKey,String text,String typeMess, String time);
+
+        void showToast(String msg);
     }
 }

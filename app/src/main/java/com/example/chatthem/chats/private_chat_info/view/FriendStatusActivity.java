@@ -44,7 +44,7 @@ public class FriendStatusActivity extends AppCompatActivity implements Contract.
 
         setListener();
         preferenceManager = new PreferenceManager(this);
-        presenter = new FriendStatusPresenter(this, "Bearer "+ preferenceManager.getString(Constants.KEY_TOKEN));
+        presenter = new FriendStatusPresenter(this, preferenceManager.getString(Constants.KEY_TOKEN));
         String id = getIntent().getStringExtra("id");
         presenter.getStatusFriend( id);
     }

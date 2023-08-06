@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.os.Bundle;
 
 import com.example.chatthem.MainActivity;
+import com.example.chatthem.cryptophy.TransferDataActivity;
 import com.example.chatthem.databinding.ActivityLoginBinding;
 import com.example.chatthem.utilities.Constants;
 import com.example.chatthem.utilities.Helpers;
@@ -26,18 +27,18 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(binding.getRoot());
         preferenceManager = new PreferenceManager(getApplicationContext());
         if(preferenceManager.getBoolean(Constants.KEY_IS_SIGNED_IN)){
-            Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-            startActivity(intent);
-            finish();
-//            if (preferenceManager.getString(Constants.KEY_PRIVATE_KEY) != null){
-//                Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-//                startActivity(intent);
-//                finish();
-//            }else {
-//                Intent intent = new Intent(getApplicationContext(), TransferDataActivity.class);
-//                startActivity(intent);
-//                finish();
-//            }
+//            Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+//            startActivity(intent);
+//            finish();
+            if (preferenceManager.getString(Constants.KEY_PRIVATE_KEY) != null){
+                Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                startActivity(intent);
+                finish();
+            }else {
+                Intent intent = new Intent(getApplicationContext(), TransferDataActivity.class);
+                startActivity(intent);
+                finish();
+            }
         }
         tabLayoutMediator = new TabLayoutMediator(binding.tabLayout,binding.viewPager,(tab, position) -> {
             switch (position){

@@ -18,13 +18,30 @@ public class Message implements Serializable {
     private String updatedAt;
     @SerializedName("__v")
     private long v;
+    private String isSending = "2";
+    //2: đã gửi, 1: đang gửi: 0: gửi thất bại
 
-    public Message(String chat, UserModel user, String content, String type, String updatedAt) {
+    public Message(String chat, UserModel user, String content, String type, String updatedAt , String isSending) {
         this.chat = chat;
         this.user = user;
         this.content = content;
         this.type = type;
         this.updatedAt = updatedAt;
+        this.isSending = isSending;
+    }
+    public Message( UserModel user, String content, String type, String updatedAt , String isSending) {
+        this.content = content;
+        this.type = type;
+        this.updatedAt = updatedAt;
+        this.isSending = isSending;
+        this.user = user;
+    }
+    public String isSending() {
+        return isSending;
+    }
+
+    public void setSending(String sending) {
+        isSending = sending;
     }
 
     public Chat getChatObject() {
